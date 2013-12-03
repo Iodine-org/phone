@@ -67,9 +67,6 @@ public final class MSISDN
    * @param scheme to which the resultant MSISDN should belong
    */
   static MSISDN create(final int cc, final int ndc, final int sn, MSISDNScheme scheme) {
-    if (scheme == null) {
-      throw new IllegalArgumentException("scheme may not be null");
-    }
     return new MSISDN(scheme.longValue(cc, ndc, sn), scheme);
   }
 
@@ -122,15 +119,10 @@ public final class MSISDN
     return scheme;
   }
 
-  /** @return the canonical MSISDN format String for the current number */
-  public String externalForm() {
-    return "+" + value;
-  }
-
-  /** @return  the simple numeric format String */
+  /** @return the canonical MSISDN format String for the number */
   @Override
   public String toString() {
-    return Long.toString(value);
+    return "+" + value;
   }
 
   @Override

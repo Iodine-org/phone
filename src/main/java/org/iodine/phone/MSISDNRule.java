@@ -20,8 +20,7 @@ final class MSISDNRule {
      * @param specification comma-separated list of valid integer values
      */
     void setValues(String specification) {
-      String[] spec = specification.split(",");
-      for (String part : spec) {
+      for (String part : specification.split(",")) {
         if ( part.contains("-")) {
           values.addAll(generateRange(part));
         }
@@ -53,7 +52,7 @@ final class MSISDNRule {
      * @return true if values is not empty and it contains the supplied value
      */
     boolean isValid(Integer value) {
-      return values.isEmpty() || value == 0 ? true : values.contains(value);
+      return values.isEmpty() ? true : values.contains(value);
     }
 
     @Override

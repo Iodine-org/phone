@@ -112,10 +112,9 @@ public class MSISDNFactory {
    * @return normalized copy of the input string
    */
   private static String normalize(String msisdnString) {
-    String result = msisdnString.trim().replaceAll("[^\\d]", "");
-    result = result.replaceFirst("^+", "");
-    result = result.replaceFirst("^00", "");
-    return result;
+    return msisdnString
+        .replaceAll("[^\\d]", "")
+        .replaceFirst("^00", "");
   }
 
 

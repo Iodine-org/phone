@@ -19,12 +19,22 @@ public class TestBuilder {
   @Test
   public void testSchemeBuilder() {
    // MSISDNScheme.clearSchemes();
-    MSISDNScheme newScheme = MSISDNScheme.create("2,3,10;CC=49;NDC=160,162,163,170-179", "DE.tmob+vfone");
+    MSISDNScheme newScheme = MSISDNScheme.create("2,2,6;CC=99;NDC=22;SN=111111", "XX");
     MSISDNFactory.addScheme(newScheme);
-    MSISDN number = MSISDN.valueOf(491711234567890L);
+    MSISDN number = MSISDN.valueOf(9922111111L);
     Assert.assertTrue ( newScheme.isValid(number));
-    Assert.assertEquals(49, number.getCC());
-    Assert.assertEquals(171, number.getNDC());
-    Assert.assertEquals(1234567890, number.getSN());
+    Assert.assertEquals(99, number.getCC());
+    Assert.assertEquals(22, number.getNDC());
+    Assert.assertEquals(111111, number.getSN());
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void failsWithBadRange() {
+    MSISDNScheme.create("2,2,6;CC=99;NDC=19-11;SN=111111", "XX");
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void failsWithEmptyString() {
+    MSISDNFactory.createMSISDN("");
   }
 }

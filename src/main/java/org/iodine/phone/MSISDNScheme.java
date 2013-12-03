@@ -63,9 +63,9 @@ public class MSISDNScheme {
 
   /**
    * @return true if all supplied MSISDN elements represent a valid MSISDN for this scheme
-   * @param countryCode
-   * @param nationalDialingCode
-   * @param subscriberNumber
+   * @param countryCode value of the country code prefix
+   * @param nationalDialingCode value of the national/operator code
+   * @param subscriberNumber the subscriber (final) portion of the number
    */
   boolean isValid(int countryCode, int nationalDialingCode, int subscriberNumber) {
     return rules.get(PartCode.CC).isValid(countryCode)
@@ -165,6 +165,7 @@ public class MSISDNScheme {
   private static Integer createKey(int countryCode, int length) {
     return (countryCode << 4) + Math.abs(length - 1);
   }
+
 
   int getKey() {
     Set<Integer> ccRule = rules.get(PartCode.CC).values;

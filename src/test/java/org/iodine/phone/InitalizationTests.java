@@ -37,6 +37,18 @@ public class InitalizationTests {
     MSISDNFactory.getSchemeForCC(353, 12);
   }
 
+  @Test
+  public void shouldSilentlyFailToLoadNoDefaultProperties() {
+    MSISDNFactory.loadDefaultScheme();
+  }
+
+  @Test
+  public void shouldSilentlyFailToLoadNonExistiongProperties() {
+    MSISDNFactory.loadSchemesFromResource("/no");
+  }
+
+
+
   @Test(expected = IllegalArgumentException.class)
   public void shouldFailWithNegativePartLength() {
     MSISDNScheme.create("1,-3,7;CC=1", "US");

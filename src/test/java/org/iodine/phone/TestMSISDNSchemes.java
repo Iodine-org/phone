@@ -47,10 +47,10 @@ public class TestMSISDNSchemes {
   @Test
   public void
   testGuessScheme() {
-    Assert.assertEquals("+201500000001", MSISDN.valueOf(201500000001L).externalForm());
-    Assert.assertEquals("+44865249864", MSISDN.parse("+44.865.249.864").externalForm());
+    Assert.assertEquals("+201500000001", MSISDN.valueOf(201500000001L).toString());
+    Assert.assertEquals("+44865249864", MSISDN.parse("+44.865.249.864").toString());
     MSISDN nb = MSISDN.parse("+234901220887");
-    Assert.assertEquals("+234901220887", nb.externalForm());
+    Assert.assertEquals("+234901220887", nb.toString());
   }
 
   @Test
@@ -98,15 +98,15 @@ public class TestMSISDNSchemes {
     }
     Collections.sort(list);
     MSISDN[] array = list.toArray(new MSISDN[0]);
-    Assert.assertEquals("+20101233576", array[0].externalForm());
-    Assert.assertEquals("+201529135653", array[array.length - 1].externalForm());
+    Assert.assertEquals("+20101233576", array[0].toString());
+    Assert.assertEquals("+201529135653", array[array.length - 1].toString());
   }
 
   @Test
   public void
   testGuessSchemeUS() {
     MSISDN usNumber = MSISDN.parse("1 855 784-9261");
-    Assert.assertEquals("+18557849261", usNumber.externalForm());
+    Assert.assertEquals("+18557849261", usNumber.toString());
     Assert.assertEquals(1, usNumber.getCC());
     Assert.assertEquals(855, usNumber.getNDC());
     Assert.assertEquals(7849261, usNumber.getSN());
@@ -114,10 +114,13 @@ public class TestMSISDNSchemes {
 
   @Test
   public void
-  testCompare() {
+  testEquality() {
     MSISDN number1 = MSISDN.parse("+353-86-3578380");
     MSISDN number2 = MSISDN.valueOf(353863578380L);
     Assert.assertEquals(number1, number2);
+    Assert.assertNotSame(number1, number2);
+    Assert.assertTrue(number1.equals(number2) && number2.equals(number1));
+    Assert.assertTrue(number1.hashCode() == number2.hashCode());
   }
 
   @Test
@@ -155,7 +158,7 @@ public class TestMSISDNSchemes {
   public void
   testAntigua() {
     MSISDN antigua = MSISDN.parse("+2687239010");
-    Assert.assertEquals("+2687239010", antigua.externalForm());
+    Assert.assertEquals("+2687239010", antigua.toString());
   }
 
   @Test
@@ -163,13 +166,13 @@ public class TestMSISDNSchemes {
   testHierarchy() {
     // test Greece, Holland, Ireland
     MSISDN dutch = MSISDN.parse("31628000000");
-    Assert.assertEquals("+31628000000", dutch.externalForm());
+    Assert.assertEquals("+31628000000", dutch.toString());
 
     MSISDN greek = MSISDN.parse("+30-22-323232");
-    Assert.assertEquals("+3022323232", greek.externalForm());
+    Assert.assertEquals("+3022323232", greek.toString());
 
     MSISDN irish = MSISDN.parse("00353863578380");
-    Assert.assertEquals("+353863578380", irish.externalForm());
+    Assert.assertEquals("+353863578380", irish.toString());
 
   }
 
@@ -179,5 +182,6 @@ public class TestMSISDNSchemes {
     MSISDN number1 = MSISDN.parse("380561234567");
     Assert.assertNull(number1);
   }
+
 
 }
