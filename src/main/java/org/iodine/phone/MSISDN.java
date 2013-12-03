@@ -1,4 +1,6 @@
-package org.seefin.phone;
+package org.iodine.phone;
+
+import java.io.Serializable;
 
 /**
  * MSISDN ("Mobile Subscriber Integrated Services Digital Network", (alternate: Mobile Station ISDN)
@@ -34,7 +36,8 @@ package org.seefin.phone;
  * @author roy.phillips
  */
 public final class MSISDN
-    implements Comparable<MSISDN> {
+    implements Comparable<MSISDN>, Serializable {
+  private static final long serialVersionUID = -20131203001L;
   private final long value;
 
   private transient MSISDNScheme scheme;
@@ -47,11 +50,12 @@ public final class MSISDN
    * @param scheme the scheme to which the MSISDN belongs
    */
   private MSISDN(Long value, MSISDNScheme scheme) {
-    if (scheme == null) {
-      throw new IllegalArgumentException("scheme may not be null");
-    }
     this.value = value;
     this.scheme = scheme;
+  }
+
+  static MSISDN fromLong (Long value, MSISDNScheme scheme) {
+    return new MSISDN(value,scheme);
   }
 
   /** @return a new MSISDN from the three parts supplied, belonging to the
@@ -76,7 +80,7 @@ public final class MSISDN
    * @throws IllegalArgumentException if the string is not a valid MSISDN for known schemes
    */
   public static MSISDN parse(String msisdnString) {
-    return MSISDNScheme.createMSISDN(msisdnString);
+    return MSISDNFactory.createMSISDN(msisdnString);
   }
 
   /** @return a new MSIDN having the value set from the supplied
@@ -86,7 +90,7 @@ public final class MSISDN
    * @param number MSISDN number as long
    */
   public static MSISDN valueOf(long number) {
-    return MSISDNScheme.fromLong(number);
+    return MSISDNFactory.fromLong(number);
   }
 
   /** @return the country code part of the MSISDN number
@@ -111,9 +115,9 @@ public final class MSISDN
 
   /** @return the scheme defining this number, recreating if necessary
    *            (e.g., after de-serialization, as it is transient) */
-  private MSISDNScheme getScheme() {
+  public MSISDNScheme getScheme() {
     if (scheme == null) {
-      scheme = MSISDNScheme.fromLong(value).scheme;
+      scheme = MSISDNFactory.fromLong(value).scheme;
     }
     return scheme;
   }
@@ -177,7 +181,7 @@ public final class MSISDN
     }
 
     public MSISDN build() {
-      return MSISDNScheme.createMSISDN("+"+cc+ndc+subscriber);
+      return MSISDNFactory.createMSISDN("+"+cc+ndc+subscriber);
     }
   }
 

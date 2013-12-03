@@ -1,4 +1,4 @@
-package org.seefin.phone;
+package org.iodine.phone;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -7,7 +7,7 @@ public class TestBuilder {
 
   @Test
   public void testBuild() {
-    MSISDNScheme.addScheme(MSISDNScheme.parse ( "3,2,7;CC=353;NDC=82,83,85,86,87,88,89", "IE"));
+    MSISDNFactory.addScheme(MSISDNScheme.create("3,2,7;CC=353;NDC=82,83,85,86,87,88,89", "IE"));
 
     MSISDN number = MSISDN.Builder().cc(353).ndc(87).subscriber(3538080).build();
     Assert.assertEquals(353873538080L, number.longValue());
@@ -19,8 +19,8 @@ public class TestBuilder {
   @Test
   public void testSchemeBuilder() {
    // MSISDNScheme.clearSchemes();
-    MSISDNScheme newScheme = MSISDNScheme.parse("2,3,10;CC=49;NDC=160,162,163,170-179", "DE.tmob+vfone");
-    MSISDNScheme.addScheme(newScheme);
+    MSISDNScheme newScheme = MSISDNScheme.create("2,3,10;CC=49;NDC=160,162,163,170-179", "DE.tmob+vfone");
+    MSISDNFactory.addScheme(newScheme);
     MSISDN number = MSISDN.valueOf(491711234567890L);
     Assert.assertTrue ( newScheme.isValid(number));
     Assert.assertEquals(49, number.getCC());
