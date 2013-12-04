@@ -29,9 +29,12 @@ import static org.iodine.phone.MSISDNScheme.PartCode;
 public class MSISDNFactory {
 
   // ... loads MSISDN specifications from file named by this property
-  private static final String MSISDN_PROPERTIES_DEFAULT = "/MSISDNScheme.properties";
+  public static final String MSISDN_PROPERTIES_DEFAULT = "/MSISDNScheme.properties";
   // get known MSISDN schemes from property file
-  private static final Map<Integer, MSISDNScheme> schemes = loadDefaultScheme();
+  private static final Map<Integer, MSISDNScheme> schemes = new HashMap<>();
+  static {
+    loadDefaultScheme();
+  }
   // exception message prefixes (public for testability)
   public static final String UNRECOGNIZED_SCHEME = "MSISDN Unrecognized scheme";
 
@@ -87,19 +90,15 @@ public class MSISDNFactory {
     if (scheme == null) {
       return null;
     }
-    MSISDNRule ccRule = scheme.rules.get(PartCode.CC);
-    if (ccRule.isValid(tryCC) == false) {
-      return null;
-    }
     MSISDNRule ndcRule = scheme.rules.get(PartCode.NDC);
     int tryNDC = Integer.valueOf(candidate.substring(ccSize, ccSize + ndcRule.length));
     if (ndcRule.isValid(tryNDC) == false) {
       return null;
     }
     String snString = candidate.substring(ccSize + ndcRule.length);
-    if (snString.length() != scheme.rules.get(PartCode.SN).length) {
+/*    if (snString.length() != scheme.rules.get(PartCode.SN).length) {
       return null;
-    }
+    }*/
     int sn = Integer.valueOf(snString);
     return MSISDN.create(tryCC, tryNDC, sn, scheme);
   }
@@ -128,8 +127,7 @@ public class MSISDNFactory {
 
   /**
    * Iterate over the schemes in the supplied properties map, parsing each
-   * definition and storing it against the scheme key in the resulting
-   * map
+   * definition and storing it against the scheme key in the resulting map
    *
    * @param schemes defined as property key/value pairs
    * @return map of scheme keys (hash of country code + length) to definitions
@@ -173,14 +171,12 @@ public class MSISDNFactory {
   }
 
 
-  public static Map<Integer, MSISDNScheme> loadDefaultScheme() {
-    HashMap<Integer, MSISDNScheme> result = new HashMap<>();
+  public static void loadDefaultScheme() {
     try {
-      loadScheme(MSISDN_PROPERTIES_DEFAULT, result);
+      loadScheme(MSISDN_PROPERTIES_DEFAULT, schemes);
     } catch (IOException e) {
-      // scheme left empty, not necessarily an error
+      //
     }
-    return result;
   }
 
   public static void loadSchemesFromResource(String schemeResource) {
@@ -206,4 +202,12 @@ public class MSISDNFactory {
     schemes.put(scheme.getKey(), scheme);
   }
 
+  public static MSISDNScheme getScheme(String label) {
+    for ( MSISDNScheme scheme : schemes.values()) {
+      if ( label.equals(scheme.getName()) == true) {
+        return scheme;
+      }
+    }
+    return null;
+  }
 }

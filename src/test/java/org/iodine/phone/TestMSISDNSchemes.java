@@ -97,7 +97,7 @@ public class TestMSISDNSchemes {
       list.add(msisdn);
     }
     Collections.sort(list);
-    MSISDN[] array = list.toArray(new MSISDN[0]);
+    MSISDN[] array = list.toArray(new MSISDN[list.size()]);
     Assert.assertEquals("+20101233576", array[0].toString());
     Assert.assertEquals("+201529135653", array[array.length - 1].toString());
   }
@@ -183,5 +183,20 @@ public class TestMSISDNSchemes {
     Assert.assertNull(number1);
   }
 
+  @Test(expected = IllegalArgumentException.class)
+  public void guessFromLongAndFailBadNDC() {
+    MSISDNFactory.fromLong(353811234567L);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void guessFromLongAndFailBadCC() {
+    MSISDNFactory.fromLong(3548112345678L);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void guessFromLongAndFailBadSN() {
+    MSISDNFactory.addScheme(MSISDNScheme.create("XX=3,2,7;CC=404;NDC=88;SN=1234567", "XX"));
+    MSISDNFactory.fromLong(4048812345678L);
+  }
 
 }

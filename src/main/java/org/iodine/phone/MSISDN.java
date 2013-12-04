@@ -37,7 +37,7 @@ import java.io.Serializable;
  */
 public final class MSISDN
     implements Comparable<MSISDN>, Serializable {
-  private static final long serialVersionUID = -20131203001L;
+  private static final long serialVersionUID = -1405789554724028687L;
   private final long value;
 
   private transient MSISDNScheme scheme;
@@ -129,8 +129,7 @@ public final class MSISDN
   public boolean equals(Object other) {
     if (this == other) return true;
     if (other == null || getClass() != other.getClass()) return false;
-    if (value != ((MSISDN) other).value) return false;
-    return true;
+    return value == ((MSISDN) other).value;
   }
 
   @Override
@@ -144,7 +143,10 @@ public final class MSISDN
   }
 
   @Override
-  public int compareTo(MSISDN other) {
+  public int compareTo( MSISDN other) {
+    if ( other == null) {
+      throw new NullPointerException("compareTo; 'other' may not be null");
+    }
     return Long.compare(value, other.value);
   }
 

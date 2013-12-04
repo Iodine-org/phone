@@ -14,12 +14,14 @@ import java.util.Set;
  * @author roy.phiilips
  */
 public class MSISDNScheme {
+
+
+
   enum PartCode {
     CC, NDC, SN
   }
   // exception message prefixes (public for testability)
   public static final String INVALID_SCHEMA_PART_LENGTH = "Invalid part length ( <= 0 ) at index ";
-
   // per-scheme instance values:
   final Map<PartCode, MSISDNRule> rules;
   final String name;
@@ -166,10 +168,25 @@ public class MSISDNScheme {
     return (countryCode << 4) + Math.abs(length - 1);
   }
 
-
   int getKey() {
     Set<Integer> ccRule = rules.get(PartCode.CC).values;
     return createKey(ccRule.iterator().next(), this.length);
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public MSISDNRule getCCRule() {
+    return rules.get(PartCode.CC);
+  }
+
+  public MSISDNRule getNDCRule() {
+    return rules.get(PartCode.NDC);
+  }
+
+  public MSISDNRule getSNRule() {
+    return rules.get(PartCode.SN);
   }
 
 }
