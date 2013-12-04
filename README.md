@@ -22,6 +22,7 @@ A complete example:
 ``DE.tmob+vfone=2,3,10;CC=49;NDC=160,162,163,170-179``
 
 ## Usage
+JavaDoc: https://github.com/Iodine-org/phone/blob/master/apidocs/index.html
 ```java
 MSISDN number1 = MSISDN.parse("+353-86-3578380");
 MSISDN number2 = MSISDN.parse("+44.865.249.864")
