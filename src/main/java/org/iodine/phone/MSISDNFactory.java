@@ -28,14 +28,14 @@ import static org.iodine.phone.MSISDNScheme.PartCode;
  */
 public class MSISDNFactory {
 
-  // ... loads MSISDN specifications from file named by this property
+  /** loads MSISDN specifications from file named by this property */
   public static final String MSISDN_PROPERTIES_DEFAULT = "/MSISDNScheme.properties";
-  // get known MSISDN schemes from property file
+  /** known MSISDN schemes from property file */
   private static final Map<Integer, MSISDNScheme> schemes = new HashMap<>();
   static {
     loadDefaultScheme();
   }
-  // exception message prefixes (public for testability)
+  /** exception message prefixes (public for testability) */
   public static final String UNRECOGNIZED_SCHEME = "MSISDN Unrecognized scheme";
 
 
@@ -68,6 +68,11 @@ public class MSISDNFactory {
     return result;
   }
 
+  /**
+   * @return a registered scheme that matches the supplied values
+   * @param cc country code of the returned scheme
+   * @param length of the number
+   */
   public static MSISDNScheme getSchemeForCC(int cc, int length) {
     return schemes.get(createKey(cc, length));
   }
@@ -96,9 +101,6 @@ public class MSISDNFactory {
       return null;
     }
     String snString = candidate.substring(ccSize + ndcRule.length);
-/*    if (snString.length() != scheme.rules.get(PartCode.SN).length) {
-      return null;
-    }*/
     int sn = Integer.valueOf(snString);
     return MSISDN.create(tryCC, tryNDC, sn, scheme);
   }
@@ -117,10 +119,8 @@ public class MSISDNFactory {
   }
 
 
-  /**
-   * @param value a numeric representation of an MSISDN
-   * @return a MSISDN created from the supplied number
-   */
+  /** @return a MSISDN created from the supplied number
+   *  @param value a numeric representation of an MSISDN */
   public static MSISDN fromLong(long value) {
     return createMSISDN(value + "");
   }
@@ -144,21 +144,16 @@ public class MSISDNFactory {
     return result;
   }
 
-  /**
-   * Key to the scheme map is CC left-shifted by four bits plus the MSISDN length-1, this
-   * allows up to 15 digits lengths to be specified with an arbitrarily long country code
-   * E.g., 353 + 11 => 0x161b, or 1 + 14 (max US number):  0x001e
-   */
+  /** @return key to the scheme map is CC left-shifted by four bits plus the MSISDN length-1, this
+   *    allows up to 15 digits lengths to be specified with an arbitrarily long country code
+   *    E.g., 353 + 11 => 0x161b, or 1 + 14 (max US number):  0x001e */
   private static Integer createKey(int countryCode, int length) {
     return (countryCode << 4) + Math.abs(length - 1);
   }
 
-  /**
-   * Clear the currently registered MSISDN schemes in this singleton,
-   * and reload the scheme definitions from the resource supplied
-   *
-   * @param schemeResource location (e.g., filename, URL) of MSISDN scheme definitions
-   */
+  /** Clear the currently registered MSISDN schemes in this singleton,
+   *  and reload the scheme definitions from the resource supplied
+   * @param schemeResource location (e.g., filename, URL) of MSISDN scheme definitions */
   private static void loadScheme(String schemeResource, Map<Integer, MSISDNScheme> schemes) throws IOException {
     schemes.clear();
     final Properties properties = new Properties();
@@ -170,15 +165,15 @@ public class MSISDNFactory {
     schemes.putAll(getSchemeMap(properties));
   }
 
-
+  /** load schemes from the default definition files,
+   *  <code>MSISDN_PROPERTIES_DEFAULT</code>, if it exists
+   *   on the classpath, otherwise does nothing */
   public static void loadDefaultScheme() {
-    try {
-      loadScheme(MSISDN_PROPERTIES_DEFAULT, schemes);
-    } catch (IOException e) {
-      //
-    }
+    loadSchemesFromResource(MSISDN_PROPERTIES_DEFAULT);
   }
 
+  /** load schemes from the specified definition files, <code>schemeResource</code>,
+   *  if it exists on the classpath, otherwise does nothing */
   public static void loadSchemesFromResource(String schemeResource) {
     schemes.clear();
     try {
@@ -188,20 +183,28 @@ public class MSISDNFactory {
     }
   }
 
+  /** remove any schemes registered with this factory */
   public static void clearSchemes() {
     schemes.clear();
   }
 
+  /** register the schemes in the supplied list with this factory
+   *  @param schemes to be added to the factory */
   public static void addSchemes(List<MSISDNScheme> schemes) {
     for ( MSISDNScheme scheme : schemes) {
       addScheme ( scheme);
     }
   }
 
+  /** register the scheme supplied with this factory
+   *  @param scheme to be added to the factory */
   public static void addScheme(MSISDNScheme scheme) {
     schemes.put(scheme.getKey(), scheme);
   }
 
+  /** @return the scheme with <code>name</code> matching the supplied
+   *  value, otherwise <code>null</code>
+   *  @param label to look-up */
   public static MSISDNScheme getScheme(String label) {
     for ( MSISDNScheme scheme : schemes.values()) {
       if ( label.equals(scheme.getName()) == true) {

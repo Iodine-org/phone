@@ -150,30 +150,39 @@ public final class MSISDN
     return Long.compare(value, other.value);
   }
 
+  /** @return a new MSISDN builder */
   public static MSISDNBuilder Builder() {
     return new MSISDNBuilder();
   }
 
+  /** Fluent builder for constructing MSISDNs from component parts */
   public static class MSISDNBuilder {
     private int cc;
     private int ndc;
     private int subscriber;
 
+    /** @return this builder with the country code set
+     *  @param cc  country code */
     public MSISDNBuilder cc(int cc) {
       this.cc = cc;
       return this;
     }
 
+    /** @return this builder with the national dailling code  set
+     *  @param ndc  national dailling code */
     public MSISDNBuilder ndc(int ndc) {
       this.ndc = ndc;
       return this;
     }
 
+    /** @return this builder with the subscriber number set
+     *  @param subscriber  subscriber number */
     public MSISDNBuilder subscriber(int subscriber) {
       this.subscriber = subscriber;
       return this;
     }
 
+    /** @return a new MSISDN constructed from the builder's state */
     public MSISDN build() {
       return MSISDNFactory.createMSISDN("+"+cc+ndc+subscriber);
     }
