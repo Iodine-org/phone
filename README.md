@@ -20,6 +20,7 @@ The *Definition* consists of:
 
 A complete example:
 ``DE.tmob+vfone=2,3,10;CC=49;NDC=160,162,163,170-179;SN=5*********``
+Defines a 15-digit phone number, country dialing code +49, with a restricted set of 3-digit 'area' codes and 10-digit subscriber numbers that must start with '5'
 
 ## Usage
 JavaDoc: https://github.com/Iodine-org/phone/blob/master/apidocs/index.html
