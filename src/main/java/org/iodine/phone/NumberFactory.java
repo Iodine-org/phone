@@ -141,7 +141,8 @@ public class NumberFactory {
     Map<Integer, NumberScheme> result = new HashMap<>();
     for (Entry<Object, Object> entry : schemes.entrySet()) {
       NumberScheme scheme = NumberScheme.create((String) entry.getValue(), (String) entry.getKey());
-      Integer cc = (Integer) scheme.rules.get(PartCode.CC).values.toArray()[0];
+      SetRule ccRule = (SetRule) scheme.rules.get(PartCode.CC);
+      Integer cc = (Integer) ccRule.values.toArray()[0];
       result.put(createKey(cc, scheme.length), scheme);
     }
     assert result.size() == schemes.size();

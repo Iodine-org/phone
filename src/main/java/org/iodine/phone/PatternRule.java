@@ -14,6 +14,9 @@ public class PatternRule extends PartRule {
 
   @Override
   void set(String specification) {
+    if ( specification.length() != length) {
+      throw new IllegalArgumentException("Pattern must be same length as part");
+    }
     this.pattern = specification;
     String testPattern = specification.replaceAll("\\*", "[\\\\d]");
     Validator.set( Pattern.compile(testPattern).matcher(""));
@@ -30,4 +33,7 @@ public class PatternRule extends PartRule {
     return "match["+pattern+"]";
   }
 
+  public String getPattern() {
+    return Validator.get().pattern().toString();
+  }
 }

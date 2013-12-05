@@ -128,7 +128,7 @@ public class NumberScheme {
       if ( part == PartCode.SN) {
         rules.put(part, new PatternRule(length));
       } else {
-        rules.put(part, new PartRule(length));
+        rules.put(part, new SetRule(length));
       }
       result += length;
     }
@@ -171,24 +171,25 @@ public class NumberScheme {
 
   /** @return the unique key generated for this scheme */
   int getKey() {
-    Set<Integer> ccRule = rules.get(PartCode.CC).values;
-    return createKey(ccRule.iterator().next(), this.length);
+    SetRule ccRule = (SetRule)rules.get(PartCode.CC);
+    Set<Integer> values = ccRule.values;
+    return createKey(values.iterator().next(), this.length);
   }
 
   public String getName() {
     return name;
   }
 
-  public PartRule getCCRule() {
-    return rules.get(PartCode.CC);
+  public SetRule getCCRule() {
+    return (SetRule)rules.get(PartCode.CC);
   }
 
-  public PartRule getNDCRule() {
-    return rules.get(PartCode.NDC);
+  public SetRule getNDCRule() {
+    return (SetRule)rules.get(PartCode.NDC);
   }
 
-  public PartRule getSNRule() {
-    return rules.get(PartCode.SN);
+  public PatternRule getSNRule() {
+    return (PatternRule)rules.get(PartCode.SN);
   }
 
 }

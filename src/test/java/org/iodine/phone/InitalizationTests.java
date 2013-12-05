@@ -63,6 +63,21 @@ public class InitalizationTests {
     NumberScheme.create("1,-3,7;CC=1", "US");
   }
 
+  @Test(expected = IllegalArgumentException.class)
+  public void shouldFailWhenNDCValueDoesNotMatchlength() {
+    NumberScheme.create("2,2,6;CC=30;NDC=222", "GR");
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void shouldFailWhenNDCRangeDoesNotMatchlength() {
+    NumberScheme.create("2,2,6;CC=300-400;NDC=222", "GR");
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void shouldFailWhenSNPatternDoesNotMatchlength() {
+    NumberScheme.create("2,2,6;CC=30;NDC=22;SN=32***", "GR");
+  }
+
   @Test
   public void returnsNullForNonExistantScheme() {
     Assert.assertNull(NumberFactory.getScheme("XYZ"));
