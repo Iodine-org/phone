@@ -100,8 +100,12 @@ public class MSISDNFactory {
     if (ndcRule.isValid(tryNDC) == false) {
       return null;
     }
+    MSISDNRule snRule = scheme.rules.get(PartCode.SN);
     String snString = candidate.substring(ccSize + ndcRule.length);
     int sn = Integer.valueOf(snString);
+    if (snRule.isValid(sn) == false) {
+      return null;
+    }
     return MSISDN.create(tryCC, tryNDC, sn, scheme);
   }
 

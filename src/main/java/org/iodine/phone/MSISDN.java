@@ -54,6 +54,11 @@ public final class MSISDN
     this.scheme = scheme;
   }
 
+  /** @return a new MSISDN number, initialized with the supplied value,
+   *  within the domain of the given scheme
+   * @param value of the phone number to return
+   * @param scheme defining the number's domain
+   */
   static MSISDN fromLong (Long value, MSISDNScheme scheme) {
     return new MSISDN(value,scheme);
   }
@@ -92,22 +97,22 @@ public final class MSISDN
 
   /** @return the country code part of the MSISDN number
    *    an integer representing the country code (CC) */
-  public int getCC() {
+  public int getCountryCode() {
     return (int) (value / getScheme().ccfactor);
   }
 
   /** @return the national dialing code part of the MSISDN number
    *    an integer representing the national dialing code (NDC) */
-  public int getNDC() {
-    return (int) ((value - (getCC() * getScheme().ccfactor))
+  public int getNationalDialingCode() {
+    return (int) ((value - (getCountryCode() * getScheme().ccfactor))
         / getScheme().ndcfactor);
   }
 
   /** @return the subscriber number part of the MSISDN number,
    *  an integer representing the subscriber numbe (SN) */
-  public int getSN() {
-    return (int) (value - (getCC() * getScheme().ccfactor)
-        - (getNDC() * getScheme().ndcfactor));
+  public int getSubscriberNumber() {
+    return (int) (value - (getCountryCode() * getScheme().ccfactor)
+        - (getNationalDialingCode() * getScheme().ndcfactor));
   }
 
   /** @return the scheme defining this number, recreating if necessary
@@ -145,7 +150,7 @@ public final class MSISDN
   @Override
   public int compareTo( MSISDN other) {
     if ( other == null) {
-      throw new NullPointerException("compareTo; 'other' may not be null");
+      throw new NullPointerException("compareTo: 'other' may not be null");
     }
     return Long.compare(value, other.value);
   }

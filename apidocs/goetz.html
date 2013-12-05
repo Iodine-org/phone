@@ -1,0 +1,42 @@
+<h2><a name="ValueBased">Value-based classes</a></h2>
+
+Some classes, such as <code>java.util.Optional</code> and
+<code>java.time.LocalDateTime</code>, are <em>value-based</em>.
+Instances of a
+value-based class:
+<ul>
+    <li>are immutable (though may contain references to mutable
+        objects);</li>
+    <li>have value-based implementations of <code>equals</code>,
+        <code>hashCode</code>, and <code>toString</code>, which are
+        computed
+        solely from the instance's state and not on its identity or the
+        state
+        of any other object;</li>
+    <li>make no use of identity-sensitive operations such as reference
+        equality between instances, identity hash code of instances, or
+        synchronization on an instances's intrinsic lock;</li>
+    <li>are considered equal solely based on
+        <code>Object.equals()</code>, not
+        based on reference equality (<code>==</code>);</li>
+    <li>are not instantiated through accessible constructors, but instead
+        through factory methods which make no committment as to the
+        identity
+        of returned instances;</li>
+    <li>are <em>freely substitutable</em> when equal, meaning that
+        interchanging
+        any two instances <code>x</code> and <code>y</code> that are equal
+        according to <code>Object.equals()</code> in any computation or
+        method
+        invocation should produce no visible change in behavior.
+    </li>
+</ul>
+
+<p>A program may produce unpredictable results if it attempts to
+    distinguish two
+    references to equal values of a value-based class, whether directly via
+    reference
+    equality or indirectly via an appeal to synchronization, identity hashing,
+    serialization, or any other identity-sensitive mechanism.  Use of
+    identity-sensitive operations on instances of value-based classes may have
+    unpredictable effects and should be avoided.</p>

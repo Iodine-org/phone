@@ -9,20 +9,20 @@ import java.util.Set;
  * Description of an MSISDN scheme (e.g., country/network operator) for a mobile subscriber
  * number, specifying the country code, national dialing code and subscriber number
  *
- * @see MSISDN
+ * @see org.iodine.phone.MSISDN
  *
- * @author roy.phiilips
+ * @author roy.phillips
  */
 public class MSISDNScheme {
 
-
-
   enum PartCode {
-    CC, NDC, SN
+    CC(0), NDC(1), SN(2);
+    final int index;
+    PartCode(int idx) { index = idx;}
   }
-  // exception message prefixes (public for testability)
+  /** exception message prefixes (public for testability) */
   public static final String INVALID_SCHEMA_PART_LENGTH = "Invalid part length ( <= 0 ) at index ";
-  // per-scheme instance values:
+  /** per-scheme instance values */
   final Map<PartCode, MSISDNRule> rules;
   final String name;
   final int length;
@@ -47,6 +47,9 @@ public class MSISDNScheme {
     this.ndcfactor = (long) Math.pow(10, snlength);
   }
 
+  /** @return a new MSISDN for the supplied number, in this scheme
+    * @throws java.lang.IllegalArgumentException if <code>number</code>
+    *           is not valid in this scheme */
   public MSISDN fromLong(long number) {
     MSISDN result = MSISDN.fromLong(number, this);
     if ( isValid(result) == false) {
@@ -55,20 +58,16 @@ public class MSISDNScheme {
     return result;
   }
 
-  /**
-   * @return true is <code>msisdn</code> is a valid MSISDN as defined by this scheme
-   * @param msisdn number
-   */
+  /** @return true is <code>msisdn</code> is a valid MSISDN as defined by this scheme
+    * @param msisdn number */
   public boolean isValid(MSISDN msisdn) {
-    return isValid(msisdn.getCC(), msisdn.getNDC(), msisdn.getSN());
+    return isValid(msisdn.getCountryCode(), msisdn.getNationalDialingCode(), msisdn.getSubscriberNumber());
   }
 
-  /**
-   * @return true if all supplied MSISDN elements represent a valid MSISDN for this scheme
-   * @param countryCode value of the country code prefix
-   * @param nationalDialingCode value of the national/operator code
-   * @param subscriberNumber the subscriber (final) portion of the number
-   */
+  /** @return true if all supplied MSISDN elements represent a valid MSISDN for this scheme
+    * @param countryCode value of the country code prefix
+    * @param nationalDialingCode value of the national/operator code
+    * @param subscriberNumber the subscriber (final) portion of the number */
   boolean isValid(int countryCode, int nationalDialingCode, int subscriberNumber) {
     return rules.get(PartCode.CC).isValid(countryCode)
         && rules.get(PartCode.NDC).isValid(nationalDialingCode)
@@ -118,18 +117,22 @@ public class MSISDNScheme {
    */
   private static int getPartLengths(Map<PartCode, MSISDNRule> rules, final String lengthSpec) {
     final String[] partsLengths = lengthSpec.split(",");
-    assert partsLengths.length == 3 : "Lengths of all three parts provided ("+lengthSpec+")";
+    assert partsLengths.length == 3 : "Requires lengths of all three parts (got: "+lengthSpec+")";
     final PartCode[] keys = {PartCode.CC, PartCode.NDC, PartCode.SN};
-    int schemeLength = 0;
-    for (int i = 0; i < keys.length; i++) {
-      int length = Integer.parseInt(partsLengths[i]);
+    int result = 0;
+    for ( PartCode part : keys) {
+      int length = Integer.parseInt(partsLengths[part.index]);
       if (length <= 0) {
-        throw new IllegalArgumentException(INVALID_SCHEMA_PART_LENGTH + i + " in " + lengthSpec);
+        throw new IllegalArgumentException(INVALID_SCHEMA_PART_LENGTH + part + " in " + lengthSpec);
       }
-      rules.put(keys[i], new MSISDNRule(length));
-      schemeLength += length;
+      if ( part == PartCode.SN) {
+        rules.put(part, new PatternRule(length));
+      } else {
+        rules.put(part, new MSISDNRule(length));
+      }
+      result += length;
     }
-    return schemeLength;
+    return result;
   }
 
   /**
@@ -143,8 +146,7 @@ public class MSISDNScheme {
     for (String partSpec : valueSet) {
       final String[] rule = partSpec.split("=");
       assert rule.length == 2 : "part is " + partSpec;
-      final PartCode key = PartCode.valueOf(rule[0]);
-      rules.get(key).setValues(rule[1]);
+      rules.get(PartCode.valueOf(rule[0])).set(rule[1]);
     }
   }
 
@@ -159,15 +161,15 @@ public class MSISDNScheme {
     return (cc * ccfactor) + (ndc * ndcfactor) + sn;
   }
 
-  /**
+  /** @return a generated unique key for this scheme<p/>
    * Key to the scheme map is CC left-shifted by four bits plus the MSISDN length-1, this
    * allows up to 15 digits lengths to be specified with an arbitrarily long country code
-   * E.g., 353 + 11 => 0x161b, or 1 + 14 (max US number):  0x001e
-   */
+   * E.g., 353 + 11 => 0x161b, or 1 + 14 (max US number):  0x001e */
   private static Integer createKey(int countryCode, int length) {
     return (countryCode << 4) + Math.abs(length - 1);
   }
 
+  /** @return the unique key generated for this scheme */
   int getKey() {
     Set<Integer> ccRule = rules.get(PartCode.CC).values;
     return createKey(ccRule.iterator().next(), this.length);

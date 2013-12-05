@@ -41,7 +41,7 @@ public class TestMSISDNSchemes {
   public void
   testGuessSchemeIE() {
     MSISDN number = MSISDN.parse("+353-86-3578380");
-    Assert.assertEquals(353, number.getCC());
+    Assert.assertEquals(353, number.getCountryCode());
   }
 
   @Test
@@ -58,7 +58,7 @@ public class TestMSISDNSchemes {
   testEGNumbers() {
     for (String number : testNumbersEG) {
       MSISDN msisdn = MSISDN.parse(number);
-      Assert.assertEquals(20, msisdn.getCC());
+      Assert.assertEquals(20, msisdn.getCountryCode());
     }
   }
 
@@ -67,7 +67,7 @@ public class TestMSISDNSchemes {
   testEGNumbers2() {
     for (String number : testMsisdns) {
       MSISDN msisdn = MSISDN.parse(number);
-      Assert.assertEquals(20, msisdn.getCC());
+      Assert.assertEquals(20, msisdn.getCountryCode());
     }
   }
 
@@ -107,9 +107,9 @@ public class TestMSISDNSchemes {
   testGuessSchemeUS() {
     MSISDN usNumber = MSISDN.parse("1 855 784-9261");
     Assert.assertEquals("+18557849261", usNumber.toString());
-    Assert.assertEquals(1, usNumber.getCC());
-    Assert.assertEquals(855, usNumber.getNDC());
-    Assert.assertEquals(7849261, usNumber.getSN());
+    Assert.assertEquals(1, usNumber.getCountryCode());
+    Assert.assertEquals(855, usNumber.getNationalDialingCode());
+    Assert.assertEquals(7849261, usNumber.getSubscriberNumber());
   }
 
   @Test
@@ -123,13 +123,20 @@ public class TestMSISDNSchemes {
     Assert.assertTrue(number1.hashCode() == number2.hashCode());
   }
 
+  @Test(expected = NullPointerException.class)
+  public void
+  compareWithNullFails() {
+    MSISDN number1 = MSISDN.parse("+353-86-3578380");
+    number1.compareTo(null);
+  }
+
   @Test
   public void
   testParts() {
     MSISDN number1 = MSISDN.parse("+353-86-3578380");
-    Assert.assertEquals(353, number1.getCC());
-    Assert.assertEquals(86, number1.getNDC());
-    Assert.assertEquals(3578380, number1.getSN());
+    Assert.assertEquals(353, number1.getCountryCode());
+    Assert.assertEquals(86, number1.getNationalDialingCode());
+    Assert.assertEquals(3578380, number1.getSubscriberNumber());
   }
 
   @Test
@@ -145,13 +152,13 @@ public class TestMSISDNSchemes {
   public void
   testNewVodafoneNDCs() {
     MSISDN number1 = MSISDN.parse("+20 100 123 4567");
-    Assert.assertSame(100, number1.getNDC());
+    Assert.assertSame(100, number1.getNationalDialingCode());
     MSISDN number2 = MSISDN.parse("+20 101 123 4567");
-    Assert.assertSame(101, number2.getNDC());
+    Assert.assertSame(101, number2.getNationalDialingCode());
     MSISDN number3 = MSISDN.parse("+20 106 123 4567");
-    Assert.assertSame(106, number3.getNDC());
+    Assert.assertSame(106, number3.getNationalDialingCode());
     MSISDN number4 = MSISDN.parse("+20 109 123 4567");
-    Assert.assertSame(109, number4.getNDC());
+    Assert.assertSame(109, number4.getNationalDialingCode());
   }
 
   @Test
@@ -174,6 +181,31 @@ public class TestMSISDNSchemes {
     MSISDN irish = MSISDN.parse("00353863578380");
     Assert.assertEquals("+353863578380", irish.toString());
 
+  }
+
+  @Test
+  public void shouldValidateSNByPattern() {
+    MSISDNFactory.clearSchemes();
+    try {
+      MSISDNScheme newScheme = MSISDNScheme.create("2,2,6;CC=99;NDC=22;SN=9****0", "XX");
+      MSISDNFactory.addScheme(newScheme);
+      MSISDN number = MSISDN.valueOf(9922911110L);
+      Assert.assertEquals ( 911110, number.getSubscriberNumber());
+    } finally {
+      MSISDNFactory.clearSchemes();
+    }
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void shouldFailInvalidSNByPattern() {
+    MSISDNFactory.clearSchemes();
+    try {
+      MSISDNScheme newScheme = MSISDNScheme.create("2,2,6;CC=99;NDC=22;SN=9****0", "XX");
+      MSISDNFactory.addScheme(newScheme);
+      MSISDN.valueOf(9922911111L);
+    } finally {
+      MSISDNFactory.clearSchemes();
+    }
   }
 
   @Test(expected = IllegalArgumentException.class)

@@ -7,7 +7,7 @@ import java.util.TreeSet;
 
 /** Defines the content rule for one part of a MSISDN number, in terms
  *  of its length and, optionally, the domain of values valid for the part */
-public final class MSISDNRule {
+public class MSISDNRule {
   final int length;
   final Set<Integer> values = new TreeSet<>();
 
@@ -22,12 +22,11 @@ public final class MSISDNRule {
    *
    * @param specification comma-separated list of valid integer values
    */
-  void setValues(String specification) {
+  void set(String specification) {
     for (String part : specification.split(",")) {
       if ( part.contains("-")) {
         values.addAll(generateRange(part));
-      }
-      else {
+      } else {
         values.add(Integer.parseInt(part));
       }
     }
@@ -54,12 +53,13 @@ public final class MSISDNRule {
   /** @return true if values is not empty and it contains the supplied value
    *  @param value of the rule */
   boolean isValid(Integer value) {
-    return values.isEmpty() || values.contains(value);
+    return length == (int)Math.log10(value) + 1
+        && (values.isEmpty() || values.contains(value));
   }
 
   @Override
   public String toString() {
-    return values.toString();
+    return "in"+values;
   }
 
   /** @return the length for the part describes by this rule */

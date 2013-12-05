@@ -11,9 +11,9 @@ public class TestBuilder {
 
     MSISDN number = MSISDN.Builder().cc(353).ndc(87).subscriber(3538080).build();
     Assert.assertEquals(353873538080L, number.longValue());
-    Assert.assertEquals(353, number.getCC());
-    Assert.assertEquals(87, number.getNDC());
-    Assert.assertEquals(3538080, number.getSN());
+    Assert.assertEquals(353, number.getCountryCode());
+    Assert.assertEquals(87, number.getNationalDialingCode());
+    Assert.assertEquals(3538080, number.getSubscriberNumber());
   }
 
   @Test
@@ -23,9 +23,9 @@ public class TestBuilder {
     MSISDNFactory.addScheme(newScheme);
     MSISDN number = MSISDN.valueOf(9922111111L);
     Assert.assertTrue ( newScheme.isValid(number));
-    Assert.assertEquals(99, number.getCC());
-    Assert.assertEquals(22, number.getNDC());
-    Assert.assertEquals(111111, number.getSN());
+    Assert.assertEquals(99, number.getCountryCode());
+    Assert.assertEquals(22, number.getNationalDialingCode());
+    Assert.assertEquals(111111, number.getSubscriberNumber());
   }
 
   @Test(expected = IllegalArgumentException.class)
