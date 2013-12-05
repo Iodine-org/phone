@@ -42,6 +42,7 @@ public class TestMSISDNSchemes {
   testGuessSchemeIE() {
     MSISDN number = MSISDN.parse("+353-86-3578380");
     Assert.assertEquals(353, number.getCountryCode());
+    Assert.assertEquals ( "+353 86 3578380", number.format("+$CC $NDC $SN"));
   }
 
   @Test

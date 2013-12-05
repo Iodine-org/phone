@@ -124,6 +124,17 @@ public final class MSISDN
     return scheme;
   }
 
+  /** @return formatted string representation, based upon the supplied template,
+        with any of the tokens "$CC", "$NDC", "$SN" replaced with the appropriate
+        values from this MSISDN
+      @param template string containing tokens "$CC", "$NDC", "$SN"  */
+  public String format ( String template) {
+    return template
+        .replace("$CC", Integer.toString(getCountryCode()))
+        .replace("$NDC", Integer.toString(getNationalDialingCode()))
+        .replace("$SN", Integer.toString(getSubscriberNumber()));
+  }
+
   /** @return the canonical MSISDN format String for the number */
   @Override
   public String toString() {
