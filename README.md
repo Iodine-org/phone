@@ -35,4 +35,6 @@ MSISDN number4 = MSISDN.Builder().cc(353).ndc(87).subscriber(3538080).build();
     Assert.assertEquals(1, usNumber.getCC());
     Assert.assertEquals(855, usNumber.getNDC());
     Assert.assertEquals(7849261, usNumber.getSN());
+    
+    System..out.println ( "Please call: " + usNumber.format("0$CC-$NDC-$SN"));
 ```
