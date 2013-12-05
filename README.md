@@ -1,9 +1,9 @@
 # Phone Number Class
 Immutable value-type representing phone numbers (including Mobile - MSISDN - numbers).
 
-A phone number can only be validated and parsed in the context of a given scheme. This library provides the MSISDN value object that represents the number, plus the ability to define schemes that specify a class of MSISDNs.
-By default, schemes are placed in a Java properties file, named MSISDNSchemes.properties located in the classpath.
-Schemes may also be added and removed programatically via the MSISDNFactory singleton or by the creation and use of MSISDNScheme instances.
+A phone number can only be validated and parsed in the context of a given scheme. This library provides the number value object that represents the number, plus the ability to define schemes that specify a class of numbers.
+By default, schemes are placed in a Java properties file, named NumberSchemes.properties located in the classpath.
+Schemes may also be added and removed programatically via the NumberFactory singleton or by the creation and use of NumberScheme instances.
 
 Schemes are defined using the following grammar:
 *SchemeName*=*Definition*
