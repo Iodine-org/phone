@@ -19,7 +19,7 @@ The *Definition* consists of:
 * Valid values for the CC and NDC portions, e.g., ``CC=12;NDC=800,840,900-999``
 
 A complete example:
-``DE.tmob+vfone=2,3,10;CC=49;NDC=160,162,163,170-179``
+``DE.tmob+vfone=2,3,10;CC=49;NDC=160,162,163,170-179;SN=5*********``
 
 ## Usage
 JavaDoc: https://github.com/Iodine-org/phone/blob/master/apidocs/index.html
