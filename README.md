@@ -1,15 +1,14 @@
-# MSISDN Phone Number Class
-### Mobile Subscriber Integrated Services Digital Network Number
-Immutable value-type representing MSISDN phone numbers (as well as most other phone numbers).
+# Phone Number Class
+Immutable value-type representing phone numbers (including Mobile - MSISDN - numbers).
 
-A MSISDN number can only be validated and parsed in the context of a given scheme. This library provides the MSISDN value object that represents the number, plus the ability to define schemes that specify a class of MSISDNs.
+A phone number can only be validated and parsed in the context of a given scheme. This library provides the MSISDN value object that represents the number, plus the ability to define schemes that specify a class of MSISDNs.
 By default, schemes are placed in a Java properties file, named MSISDNSchemes.properties located in the classpath.
 Schemes may also be added and removed programatically via the MSISDNFactory singleton or by the creation and use of MSISDNScheme instances.
 
 Schemes are defined using the following grammar:
 *SchemeName*=*Definition*
 
-Where scheme name is a label for the scheme, conventionally consisting of the 2-letter ISO country code, and a distiquishing label, such as:
+Where scheme name is a label for the scheme, conventionally consisting of the 2-letter ISO country code, and a distinguishing label, such as:
 ``DE.vodafone``
 For the Vodafone number scheme in Germany
 
@@ -25,12 +24,12 @@ Defines a 15-digit phone number, country dialing code +49, with a restricted set
 ## Usage
 JavaDoc: https://github.com/Iodine-org/phone/blob/master/apidocs/index.html
 ```java
-MSISDN number1 = MSISDN.parse("+353-86-3578380");
-MSISDN number2 = MSISDN.parse("+44.865.249.864")
-MSISDN number3 = MSISDN.valueOf(491711234567890L);
-MSISDN number4 = MSISDN.Builder().cc(353).ndc(87).subscriber(3538080).build();
+PhoneNumber number1 = PhoneNumber.parse("+353-86-3578380");
+PhoneNumber number2 = PhoneNumber.parse("+44.865.249.864")
+PhoneNumber number3 = PhoneNumber.valueOf(491711234567890L);
+PhoneNumber number4 = PhoneNumber.Builder().cc(353).ndc(87).subscriber(3538080).build();
 
-    MSISDN usNumber = MSISDN.parse("1 855 784-9261");
+    PhoneNumber usNumber = PhoneNumber.parse("1 855 784-9261");
     Assert.assertEquals("+18557849261", usNumber.toString());
     Assert.assertEquals(1, usNumber.getCC());
     Assert.assertEquals(855, usNumber.getNDC());

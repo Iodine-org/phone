@@ -17,68 +17,68 @@ public class InitalizationTests {
     add(new String[] { "2,3,6;CC=44", "UK"});
     add(new String[] { "1,3,7;CC=1", "US"});
   }};
-  private static final List<MSISDNScheme> SCHEMES = new ArrayList<>();
+  private static final List<NumberScheme> SCHEMES = new ArrayList<>();
   static {
     for ( String[] item : SCHEME_SPEC)  {
-      SCHEMES.add(MSISDNScheme.create(item[0], item[1]));
+      SCHEMES.add(NumberScheme.create(item[0], item[1]));
     }
   }
 
   @Test(expected = IllegalStateException.class)
   public void shouldFailIfNoSchemes() {
-    MSISDNFactory.clearSchemes();
-    MSISDNFactory.fromLong(0L);
+    NumberFactory.clearSchemes();
+    NumberFactory.fromLong(0L);
   }
 
   @Test
   public void loadMultipleSchemes() {
-    MSISDNFactory.addSchemes(SCHEMES);
-    MSISDNScheme ireland = MSISDNFactory.getSchemeForCC(353, 12);
+    NumberFactory.addSchemes(SCHEMES);
+    NumberScheme ireland = NumberFactory.getSchemeForCC(353, 12);
     Assert.assertNotNull(ireland);
-    MSISDNScheme uk = MSISDNFactory.getSchemeForCC(44, 11);
+    NumberScheme uk = NumberFactory.getSchemeForCC(44, 11);
     Assert.assertNotNull(uk);
-    MSISDNScheme us = MSISDNFactory.getSchemeForCC(1, 11);
+    NumberScheme us = NumberFactory.getSchemeForCC(1, 11);
     Assert.assertNotNull(us);
   }
 
   @Test
   public void clearSchemesWillThrowException() {
-    MSISDNFactory.addSchemes(SCHEMES);
-    MSISDNFactory.clearSchemes();
-    MSISDNFactory.getSchemeForCC(353, 12);
+    NumberFactory.addSchemes(SCHEMES);
+    NumberFactory.clearSchemes();
+    NumberFactory.getSchemeForCC(353, 12);
   }
 
   @Test
   public void shouldSilentlyFailToLoadNoDefaultProperties() {
-    MSISDNFactory.loadDefaultScheme();
+    NumberFactory.loadDefaultScheme();
   }
 
   @Test
   public void shouldSilentlyFailToLoadNonExistingProperties() {
-    MSISDNFactory.loadSchemesFromResource("/no");
+    NumberFactory.loadSchemesFromResource("/no");
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void shouldFailWithNegativePartLength() {
-    MSISDNScheme.create("1,-3,7;CC=1", "US");
+    NumberScheme.create("1,-3,7;CC=1", "US");
   }
 
   @Test
   public void returnsNullForNonExistantScheme() {
-    Assert.assertNull(MSISDNFactory.getScheme("XYZ"));
+    Assert.assertNull(NumberFactory.getScheme("XYZ"));
   }
 
   @Test
   public void loadsDefaultSchemes() throws IOException {
-    MSISDNFactory.clearSchemes();
+    NumberFactory.clearSchemes();
 
     try {
-      createTempSchemeFile(SCHEME_SPEC,"out/test/iodine-phone/MSISDNScheme.properties");
+      createTempSchemeFile(SCHEME_SPEC,"out/test/iodine-phone/NumberScheme.properties");
 
-      MSISDNFactory.loadDefaultScheme();
-      Assert.assertNotNull(MSISDNFactory.getScheme("IE"));
+      NumberFactory.loadDefaultScheme();
+      Assert.assertNotNull(NumberFactory.getScheme("IE"));
     } finally {
-      MSISDNFactory.clearSchemes();
+      NumberFactory.clearSchemes();
     }
   }
 

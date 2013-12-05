@@ -1,8 +1,8 @@
 package org.iodine.phone.client;
 
-import org.iodine.phone.MSISDN;
-import org.iodine.phone.MSISDNFactory;
-import org.iodine.phone.MSISDNScheme;
+import org.iodine.phone.NumberFactory;
+import org.iodine.phone.NumberScheme;
+import org.iodine.phone.PhoneNumber;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -13,33 +13,33 @@ import java.io.ObjectOutputStream;
 
 public class SerializationTests {
 
-  private static final MSISDNScheme SCHEME = MSISDNScheme.create("2,3,10;CC=49;NDC=160,162,163,170-179", "DE.tmob+vfone");
+  private static final NumberScheme SCHEME = NumberScheme.create("2,3,10;CC=49;NDC=160,162,163,170-179", "DE.tmob+vfone");
 
   @Test
      public void recreatesSchemeTransient() throws Exception {
-    // create a MSISDN from an explicit scheme (not registered with the factory singleton)
-    MSISDN number = SCHEME.fromLong(491601234567890L);
+    // create a PhoneNumber from an explicit scheme (not registered with the factory singleton)
+    PhoneNumber number = SCHEME.fromLong(491601234567890L);
     Assert.assertNotNull(number);
 
     byte[] serialized = serialize(number);
 
     // add the scheme to the factory, so that it is found on re-creation
-    MSISDNFactory.addScheme(SCHEME);
+    NumberFactory.addScheme(SCHEME);
     Object object = deserialize(serialized);
-    Assert.assertEquals ( MSISDN.class, object.getClass());
-    MSISDN readBack = (MSISDN)object;
+    Assert.assertEquals ( PhoneNumber.class, object.getClass());
+    PhoneNumber readBack = (PhoneNumber)object;
     Assert.assertEquals ( number, readBack);
     Assert.assertEquals ( SCHEME, readBack.getScheme());
   }
 
   @Test(expected = IllegalStateException.class)
   public void cannotRecreateFromLongValue() throws Exception {
-    MSISDN number = SCHEME.fromLong(491601234567890L);
+    PhoneNumber number = SCHEME.fromLong(491601234567890L);
     Assert.assertNotNull(number);
-    MSISDNFactory.clearSchemes();
+    NumberFactory.clearSchemes();
 
     long longValue = number.longValue();
-    MSISDN.valueOf(longValue);
+    PhoneNumber.valueOf(longValue);
   }
 
   private byte[] serialize ( Object data) throws Exception {

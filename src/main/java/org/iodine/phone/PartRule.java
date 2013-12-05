@@ -5,14 +5,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-/** Defines the content rule for one part of a MSISDN number, in terms
+/** Defines the content rule for one part of a PhoneNumber number, in terms
  *  of its length and, optionally, the domain of values valid for the part */
-public class MSISDNRule {
+public class PartRule {
   final int length;
   final Set<Integer> values = new TreeSet<>();
 
   /** initialize this rule for the length specified */
-  MSISDNRule(int length) {
+  PartRule(int length) {
     this.length = length;
   }
 

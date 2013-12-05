@@ -3,7 +3,7 @@ package org.iodine.phone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class PatternRule extends MSISDNRule {
+public class PatternRule extends PartRule {
 
   private final ThreadLocal<Matcher> Validator = new ThreadLocal<>();
   private String pattern = "9(" + length + ")";

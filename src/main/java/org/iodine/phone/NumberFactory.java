@@ -8,17 +8,17 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import static org.iodine.phone.MSISDNScheme.PartCode;
+import static org.iodine.phone.NumberScheme.PartCode;
 
 /**
- * Creates MSISDN numbers based on schemes, loaded from a resource named <code>MSISDNScheme.properties</code>
+ * Creates PhoneNumber numbers based on schemes, loaded from a resource named <code>NumberScheme.properties</code>
  * <p/>
  * The file format consists of a unique key (usually the ISO country code, and optionally, MNO name and/or a
  * discriminator), followed by a specification of the the number scheme, for example:
  * <pre>
  *   EG.9=2,2,7;CC=20;NDC=10,11,12,14,16,17,18,19
  * </pre>
- * Describes a MSISDN scheme where the country code part is "20", the NDC part is two digits long and in the
+ * Describes a PhoneNumber scheme where the country code part is "20", the NDC part is two digits long and in the
  * specified set, and the subscriber number is seven digits long
  * <p/>
  * This is the 'companion class' (public) that Josh Bloch recommends when working with immutable value objects,
@@ -26,37 +26,37 @@ import static org.iodine.phone.MSISDNScheme.PartCode;
  *
  * @author roy.phiilips
  */
-public class MSISDNFactory {
+public class NumberFactory {
 
-  /** loads MSISDN specifications from file named by this property */
-  public static final String MSISDN_PROPERTIES_DEFAULT = "/MSISDNScheme.properties";
-  /** known MSISDN schemes from property file */
-  private static final Map<Integer, MSISDNScheme> schemes = new HashMap<>();
+  /** loads PhoneNumber specifications from file named by this property */
+  public static final String MSISDN_PROPERTIES_DEFAULT = "/NumberScheme.properties";
+  /** known PhoneNumber schemes from property file */
+  private static final Map<Integer, NumberScheme> schemes = new HashMap<>();
   static {
     loadDefaultScheme();
   }
   /** exception message prefixes (public for testability) */
-  public static final String UNRECOGNIZED_SCHEME = "MSISDN Unrecognized scheme";
+  public static final String UNRECOGNIZED_SCHEME = "PhoneNumber Unrecognized scheme";
 
 
   /**
-   * MSISDN factory method to match the input string against the known
-   * set of MSISDN schemes and instantiate an MSISDN object
+   * PhoneNumber factory method to match the input string against the known
+   * set of PhoneNumber schemes and instantiate an PhoneNumber object
    *
    * @param msisdnString from which to initialize the result
-   * @return MSISDN create from the input string
-   * @throws IllegalArgumentException if the parameter is not a valid and known MSISDN
+   * @return PhoneNumber create from the input string
+   * @throws IllegalArgumentException if the parameter is not a valid and known PhoneNumber
    */
-  static MSISDN createMSISDN(String msisdnString) {
+  static PhoneNumber createMSISDN(String msisdnString) {
     if (msisdnString == null || msisdnString.trim().length() == 0) {
       throw new IllegalArgumentException(
-          "MSISDN candidate string must be non-null and non-empty: " + msisdnString);
+          "PhoneNumber candidate string must be non-null and non-empty: " + msisdnString);
     }
     if ( schemes.size() == 0) {
-      throw new IllegalStateException ( "No MSISDN schemes registered");
+      throw new IllegalStateException ( "No PhoneNumber schemes registered");
     }
     String candidate = normalize(msisdnString);
-    MSISDN result = null;
+    PhoneNumber result = null;
     for (int ccSize = 3; ccSize > 0 && result == null; ccSize--) {
       result = lookupByCC(ccSize, candidate);
     }
@@ -73,44 +73,44 @@ public class MSISDNFactory {
    * @param cc country code of the returned scheme
    * @param length of the number
    */
-  public static MSISDNScheme getSchemeForCC(int cc, int length) {
+  public static NumberScheme getSchemeForCC(int cc, int length) {
     return schemes.get(createKey(cc, length));
   }
 
   /**
    * Look-up the scheme for the country code represented by the first <code>ccSize</code>
    * digits of the supplied string, continuing to match the NDC and SN if found, and
-   * creating the appropriate MSISDN
+   * creating the appropriate PhoneNumber
    *
    * @param ccSize    assumed size of country code prefix
-   * @param candidate the normalized MSISDN string
-   * @return a MSISDN version of the candidate string, if valid, else null
+   * @param candidate the normalized PhoneNumber string
+   * @return a PhoneNumber version of the candidate string, if valid, else null
    */
-  private static MSISDN lookupByCC(int ccSize, String candidate) {
+  private static PhoneNumber lookupByCC(int ccSize, String candidate) {
     if (candidate.length() < ccSize) {
       return null;
     }
     int tryCC = Integer.valueOf(candidate.substring(0, ccSize));
-    MSISDNScheme scheme = schemes.get(createKey(tryCC, candidate.length()));
+    NumberScheme scheme = schemes.get(createKey(tryCC, candidate.length()));
     if (scheme == null) {
       return null;
     }
-    MSISDNRule ndcRule = scheme.rules.get(PartCode.NDC);
+    PartRule ndcRule = scheme.rules.get(PartCode.NDC);
     int tryNDC = Integer.valueOf(candidate.substring(ccSize, ccSize + ndcRule.length));
     if (ndcRule.isValid(tryNDC) == false) {
       return null;
     }
-    MSISDNRule snRule = scheme.rules.get(PartCode.SN);
+    PartRule snRule = scheme.rules.get(PartCode.SN);
     String snString = candidate.substring(ccSize + ndcRule.length);
     int sn = Integer.valueOf(snString);
     if (snRule.isValid(sn) == false) {
       return null;
     }
-    return MSISDN.create(tryCC, tryNDC, sn, scheme);
+    return PhoneNumber.create(tryCC, tryNDC, sn, scheme);
   }
 
   /**
-   * process a external MSISDN string into a normalized string, removing
+   * process a external PhoneNumber string into a normalized string, removing
    * non-digits, and country code indicators ('+', '00') if present
    *
    * @param msisdnString possibly non-normalized
@@ -123,9 +123,9 @@ public class MSISDNFactory {
   }
 
 
-  /** @return a MSISDN created from the supplied number
-   *  @param value a numeric representation of an MSISDN */
-  public static MSISDN fromLong(long value) {
+  /** @return a PhoneNumber created from the supplied number
+   *  @param value a numeric representation of an PhoneNumber */
+  public static PhoneNumber fromLong(long value) {
     return createMSISDN(value + "");
   }
 
@@ -136,11 +136,11 @@ public class MSISDNFactory {
    * @param schemes defined as property key/value pairs
    * @return map of scheme keys (hash of country code + length) to definitions
    */
-  private static Map<Integer, MSISDNScheme> getSchemeMap(Properties schemes) {
+  private static Map<Integer, NumberScheme> getSchemeMap(Properties schemes) {
     assert schemes.size() > 0;
-    Map<Integer, MSISDNScheme> result = new HashMap<>();
+    Map<Integer, NumberScheme> result = new HashMap<>();
     for (Entry<Object, Object> entry : schemes.entrySet()) {
-      MSISDNScheme scheme = MSISDNScheme.create((String) entry.getValue(), (String) entry.getKey());
+      NumberScheme scheme = NumberScheme.create((String) entry.getValue(), (String) entry.getKey());
       Integer cc = (Integer) scheme.rules.get(PartCode.CC).values.toArray()[0];
       result.put(createKey(cc, scheme.length), scheme);
     }
@@ -148,17 +148,17 @@ public class MSISDNFactory {
     return result;
   }
 
-  /** @return key to the scheme map is CC left-shifted by four bits plus the MSISDN length-1, this
+  /** @return key to the scheme map is CC left-shifted by four bits plus the PhoneNumber length-1, this
    *    allows up to 15 digits lengths to be specified with an arbitrarily long country code
    *    E.g., 353 + 11 => 0x161b, or 1 + 14 (max US number):  0x001e */
   private static Integer createKey(int countryCode, int length) {
     return (countryCode << 4) + Math.abs(length - 1);
   }
 
-  /** Clear the currently registered MSISDN schemes in this singleton,
+  /** Clear the currently registered PhoneNumber schemes in this singleton,
    *  and reload the scheme definitions from the resource supplied
-   * @param schemeResource location (e.g., filename, URL) of MSISDN scheme definitions */
-  private static void loadScheme(String schemeResource, Map<Integer, MSISDNScheme> schemes) throws IOException {
+   * @param schemeResource location (e.g., filename, URL) of PhoneNumber scheme definitions */
+  private static void loadScheme(String schemeResource, Map<Integer, NumberScheme> schemes) throws IOException {
     schemes.clear();
     final Properties properties = new Properties();
     InputStream input = schemes.getClass().getResourceAsStream(schemeResource);
@@ -194,23 +194,23 @@ public class MSISDNFactory {
 
   /** register the schemes in the supplied list with this factory
    *  @param schemes to be added to the factory */
-  public static void addSchemes(List<MSISDNScheme> schemes) {
-    for ( MSISDNScheme scheme : schemes) {
+  public static void addSchemes(List<NumberScheme> schemes) {
+    for ( NumberScheme scheme : schemes) {
       addScheme ( scheme);
     }
   }
 
   /** register the scheme supplied with this factory
    *  @param scheme to be added to the factory */
-  public static void addScheme(MSISDNScheme scheme) {
+  public static void addScheme(NumberScheme scheme) {
     schemes.put(scheme.getKey(), scheme);
   }
 
   /** @return the scheme with <code>name</code> matching the supplied
    *  value, otherwise <code>null</code>
    *  @param label to look-up */
-  public static MSISDNScheme getScheme(String label) {
-    for ( MSISDNScheme scheme : schemes.values()) {
+  public static NumberScheme getScheme(String label) {
+    for ( NumberScheme scheme : schemes.values()) {
       if ( label.equals(scheme.getName()) == true) {
         return scheme;
       }
