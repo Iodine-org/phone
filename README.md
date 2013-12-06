@@ -15,10 +15,10 @@ For the Vodafone number scheme in Germany
 The *Definition* consists of:
 * Specification of the sizes of the country code, area (operator) code and subscriber number parts of the scheme, e.g.,
 2,3,10 specifying a 2 digit country code (CC), 3 digit area code (NDC) and 10 digit subscriber number (SN)
-* Valid values for the CC and NDC portions, e.g., ``CC=12;NDC=800,840,900-999``
+* Valid values for the CC and NDC portions, e.g., ``CC=2:12;NDC=3:800,840,900-999;SN=10``
 
 A complete example:
-``DE.tmob+vfone=2,3,10;CC=49;NDC=160,162,163,170-179;SN=5*********``
+``DE.tmob+vfone=CC=2:49;NDC=3:160,162,163,170-179;SN=10:5*********``
 Defines a 15-digit phone number, country dialing code +49, with a restricted set of 3-digit 'area' codes and 10-digit subscriber numbers that must start with '5'
 
 ## Usage
