@@ -34,6 +34,6 @@ public class PatternRule extends PartRule {
   }
 
   public String getPattern() {
-    return Validator.get().pattern().toString();
+    return Validator.get() != null ? Validator.get().pattern().toString() : "";
   }
 }

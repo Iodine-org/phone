@@ -188,7 +188,7 @@ public class TestNumberSchemes {
   public void shouldValidateSNByPattern() {
     NumberFactory.clearSchemes();
     try {
-      NumberScheme newScheme = NumberScheme.create("2,2,6;CC=99;NDC=22;SN=9****0", "XX");
+      NumberScheme newScheme = NumberScheme.create("CC=2:99;NDC=2:22;SN=6:9****0", "XX");
       NumberFactory.addScheme(newScheme);
       PhoneNumber number = PhoneNumber.valueOf(9922911110L);
       Assert.assertEquals ( 911110, number.getSubscriberNumber());
@@ -201,7 +201,7 @@ public class TestNumberSchemes {
   public void shouldFailInvalidSNByPattern() {
     NumberFactory.clearSchemes();
     try {
-      NumberScheme newScheme = NumberScheme.create("2,2,6;CC=99;NDC=22;SN=9****0", "XX");
+      NumberScheme newScheme = NumberScheme.create("CC=2:99;NDC=2:22;SN=6:9****0", "XX");
       NumberFactory.addScheme(newScheme);
       PhoneNumber.valueOf(9922911111L);
     } finally {
@@ -228,8 +228,18 @@ public class TestNumberSchemes {
 
   @Test(expected = IllegalArgumentException.class)
   public void guessFromLongAndFailBadSN() {
-    NumberFactory.addScheme(NumberScheme.create("XX=3,2,7;CC=404;NDC=88;SN=1234567", "XX"));
+    NumberFactory.addScheme(NumberScheme.create("CC=3:404;NDC=2:88;SN=1234567", "XX"));
     NumberFactory.fromLong(4048812345678L);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void failWithMissingSN() {
+    NumberScheme.create("CC=3:404;NDC=2:88", "XX");
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void failWithMissingSNSize() {
+    NumberScheme.create("CC=3:404;NDC=2:88;SN=", "XX");
   }
 
 }

@@ -11,7 +11,8 @@ import java.util.Properties;
 import static org.iodine.phone.NumberScheme.PartCode;
 
 /**
- * Creates PhoneNumber numbers based on schemes, loaded from a resource named <code>NumberScheme.properties</code>
+ * Creates PhoneNumber numbers based on registered schemes, loaded from a resource named
+ * <code>NumberScheme.properties</code>
  * <p/>
  * The file format consists of a unique key (usually the ISO country code, and optionally, MNO name and/or a
  * discriminator), followed by a specification of the the number scheme, for example:

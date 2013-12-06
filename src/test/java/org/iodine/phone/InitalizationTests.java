@@ -13,9 +13,9 @@ import java.util.List;
 public class InitalizationTests {
 
   private static final List<String[]> SCHEME_SPEC = new ArrayList<String[]>() {{
-    add(new String[] { "3,2,7;CC=353;NDC=82,83,85,86,87,88,89", "IE"});
-    add(new String[] { "2,3,6;CC=44", "UK"});
-    add(new String[] { "1,3,7;CC=1", "US"});
+    add(new String[] { "CC=3:353;NDC=2:82,83,85,86,87,88,89;SN=7", "IE"});
+    add(new String[] { "CC=2:44;NDC=3;SN=6", "UK"});
+    add(new String[] { "CC=1:1;NDC=3;SN=7", "US"});
   }};
   private static final List<NumberScheme> SCHEMES = new ArrayList<>();
   static {
@@ -60,22 +60,22 @@ public class InitalizationTests {
 
   @Test(expected = IllegalArgumentException.class)
   public void shouldFailWithNegativePartLength() {
-    NumberScheme.create("1,-3,7;CC=1", "US");
+    NumberScheme.create("CC=1:1;NDC=-1;SN=1", "US");
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void shouldFailWhenNDCValueDoesNotMatchlength() {
-    NumberScheme.create("2,2,6;CC=30;NDC=222", "GR");
+    NumberScheme.create("CC=2:30;NDC=2:222;SN=6", "GR");
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void shouldFailWhenNDCRangeDoesNotMatchlength() {
-    NumberScheme.create("2,2,6;CC=300-400;NDC=222", "GR");
+    NumberScheme.create("CC=2:22;NDC=2:300-400;SN=6", "GR");
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void shouldFailWhenSNPatternDoesNotMatchlength() {
-    NumberScheme.create("2,2,6;CC=30;NDC=22;SN=32***", "GR");
+    NumberScheme.create("CC=2:30;NDC=2:22;SN=6:32***", "GR");
   }
 
   @Test

@@ -1,6 +1,5 @@
 package org.iodine.phone;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -20,6 +19,9 @@ public class NumberScheme {
     final int index;
     PartCode(int idx) { index = idx;}
   }
+  public enum SchemeType {
+    UNDEFINED, FIXED_LINE, MOBILE, TOLL_FREE, PREMIUM_RATE, SHARE_COST, VOIP, PERSONAL
+  }
   /** exception message prefixes (public for testability) */
   public static final String INVALID_SCHEMA_PART_LENGTH = "Invalid part length ( <= 0 ) at index ";
   /** per-scheme instance values */
@@ -28,6 +30,7 @@ public class NumberScheme {
   final int length;
   final long ccfactor; // factor to decode CC from a long value
   final long ndcfactor; // factor to decode NDC from a long value
+  private SchemeType type = SchemeType.UNDEFINED;
 
   /**
    * Constructor called from the static scheme loader to instantiate a scheme
@@ -76,7 +79,8 @@ public class NumberScheme {
 
   @Override
   public String toString() {
-    return name + "=" + rules.toString();
+    return name + "=" + rules.toString() +
+        (type != null && type != SchemeType.UNDEFINED ? ", type=" + type : "");
   }
 
   /**
@@ -96,41 +100,35 @@ public class NumberScheme {
    * @return a new scheme initialized from the supplied specification
    */
   public static NumberScheme create(final String specification, String schemeName) {
-    final String[] spec = specification.replaceAll(" ","").split(";");
-    assert spec.length > 0 : "At minimum, parts lengths must specified";
-    Map<PartCode, PartRule> rules = new HashMap<>();
+    Map<String,String> specMap = getSpecMap(specification);
+    assert specMap.size() > 0 : "At minimum, parts lengths must specified";
 
-    int schemeLength = getPartLengths(rules, spec[0]);
-    assert schemeLength <= 15 : "PhoneNumber in fifteen-digit numbering space";
-    setPartRules(rules, Arrays.copyOfRange(spec, 1, spec.length));
-
-    return new NumberScheme(schemeName, rules, schemeLength);
+    SchemeType type = SchemeType.UNDEFINED;
+    if ( specMap.containsKey("TYPE")) {
+      type = SchemeType.valueOf(specMap.get("TYPE"));
+    }
+    Map<PartCode, PartRule> rules = getPartRules(specMap);
+    if ( rules.size() != 3) {
+      throw new IllegalArgumentException("Expected rules for CC, NDC and SN, got[" + specification + "]");
+    }
+    int schemeLength =
+        rules.get(PartCode.CC).getLength() +
+        rules.get(PartCode.NDC).getLength() +
+        rules.get(PartCode.SN).getLength();
+    NumberScheme result = new NumberScheme(schemeName, rules, schemeLength);
+    result.setType ( type);
+    return result;
   }
 
-  /**
-   * For each part, set the length of that part, as defined by the supplied
-   * specification string, in the supplied <code>rules</code> map
-   *
-   * @param lengthSpec comma-separated part length specification (e.g., "2,2,7")
-   * @param rules      map of rule objects, one for each part: CC, NDC and SN
-   * @return the total length of the PhoneNumber of the specified scheme
-   */
-  private static int getPartLengths(Map<PartCode, PartRule> rules, final String lengthSpec) {
-    final String[] partsLengths = lengthSpec.split(",");
-    assert partsLengths.length == 3 : "Requires lengths of all three parts (got: "+lengthSpec+")";
-    final PartCode[] keys = {PartCode.CC, PartCode.NDC, PartCode.SN};
-    int result = 0;
-    for ( PartCode part : keys) {
-      int length = Integer.parseInt(partsLengths[part.index]);
-      if (length <= 0) {
-        throw new IllegalArgumentException(INVALID_SCHEMA_PART_LENGTH + part + " in " + lengthSpec);
+  private static Map<String,String> getSpecMap(String specification) {
+    String[] parts = specification.replaceAll(" ", "").toUpperCase().split(";");
+    Map<String,String> result = new HashMap<>(parts.length);
+    for ( String part : parts) {
+      String[] spec = part.split("=");
+      if ( spec.length != 2) {
+        throw new IllegalArgumentException ( "Expected Key=Value, got [" + specification + "]");
       }
-      if ( part == PartCode.SN) {
-        rules.put(part, new PatternRule(length));
-      } else {
-        rules.put(part, new SetRule(length));
-      }
-      result += length;
+      result.put(spec[0], spec[1]);
     }
     return result;
   }
@@ -140,14 +138,30 @@ public class NumberScheme {
    * (this is the set of allowed values for that part)
    *
    * @param valueSet array of allowed values
-   * @param rules    for the parts of the PhoneNumber
    */
-  private static void setPartRules(Map<PartCode, PartRule> rules, final String[] valueSet) {
-    for (String partSpec : valueSet) {
-      final String[] rule = partSpec.split("=");
-      assert rule.length == 2 : "part is " + partSpec;
-      rules.get(PartCode.valueOf(rule[0])).set(rule[1]);
+  private static Map<PartCode, PartRule> getPartRules(final Map<String, String> valueSet) {
+    Map<PartCode, PartRule> result = new HashMap<>();
+    for ( PartCode part : new PartCode[] {PartCode.CC, PartCode.NDC, PartCode.SN}) {
+      if ( valueSet.containsKey(part.toString())) {
+        String[] partSpec = valueSet.get(part.toString()).split(":");
+        int length = Integer.parseInt(partSpec[0]);
+        if (length <= 0) {
+          throw new IllegalArgumentException(INVALID_SCHEMA_PART_LENGTH
+              + part + " in " + partSpec);
+        }
+        PartRule rule;
+        if ( part == PartCode.SN) {
+          rule = new PatternRule(length);
+        } else {
+          rule = new SetRule(length);
+        }
+        if ( partSpec.length > 1) {
+          rule.set(partSpec[1]);
+        }
+        result.put(part, rule);
+      }
     }
+    return result;
   }
 
   /**
@@ -176,6 +190,14 @@ public class NumberScheme {
     return createKey(values.iterator().next(), this.length);
   }
 
+  public void setType ( SchemeType type) {
+    this.type = type;
+  }
+
+  public SchemeType getType() {
+    return type;
+  }
+
   public String getName() {
     return name;
   }
@@ -190,6 +212,52 @@ public class NumberScheme {
 
   public PatternRule getSNRule() {
     return (PatternRule)rules.get(PartCode.SN);
+  }
+
+  public static SchemeBuilder SchemeBuilder() {
+    return new SchemeBuilder();
+  }
+
+  public static class SchemeBuilder {
+    private String label;
+    private String cc;
+    private String ndc;
+    private String sn;
+    private SchemeType type;
+
+    public SchemeBuilder label(String label) {
+      this.label = label;
+      return this;
+    }
+
+    public SchemeBuilder cc(String cc) {
+      this.cc = cc;
+      return this;
+    }
+
+    public SchemeBuilder ndc(String ndc) {
+      this.ndc = ndc;
+      return this;
+    }
+
+    public SchemeBuilder sn(String sn) {
+      this.sn = sn;
+      return this;
+    }
+
+    public SchemeBuilder type(SchemeType type) {
+      this.type = type;
+      return this;
+    }
+
+    public NumberScheme build() {
+      String spec = "CC=" + cc + ";NDC=" + ndc + ";SN=" + sn;
+      NumberScheme result = NumberScheme.create(spec, label);
+      if ( type != null) {
+        result.setType(type);
+      }
+      return result;
+    }
   }
 
 }

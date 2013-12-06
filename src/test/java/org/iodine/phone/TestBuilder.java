@@ -7,7 +7,12 @@ public class TestBuilder {
 
   @Test
   public void testBuild() {
-    NumberFactory.addScheme(NumberScheme.create("3,2,7;CC=353;NDC=82,83,85,86,87,88,89", "IE"));
+    NumberFactory.addScheme(NumberScheme.SchemeBuilder()
+        .cc("3:353")
+        .ndc("2:82,83,85,86,87,88,89")
+        .sn("7")
+        .label("IE")
+        .type(NumberScheme.SchemeType.FIXED_LINE).build());
 
     PhoneNumber number = PhoneNumber.Builder().cc(353).ndc(87).subscriber(3538080).build();
     Assert.assertEquals(353873538080L, number.longValue());
@@ -19,10 +24,11 @@ public class TestBuilder {
   @Test
   public void testSchemeBuilder() {
    // NumberScheme.clearSchemes();
-    NumberScheme newScheme = NumberScheme.create("2,2,6;CC=99;NDC=22;SN=111111", "XX");
+    NumberScheme newScheme = NumberScheme.create("CC=2:99;NDC=2:22;SN=6:111111;Type=Mobile", "XX");
+    Assert.assertEquals(NumberScheme.SchemeType.MOBILE, newScheme.getType());
     NumberFactory.addScheme(newScheme);
     PhoneNumber number = PhoneNumber.valueOf(9922111111L);
-    Assert.assertTrue ( newScheme.isValid(number));
+    Assert.assertTrue(newScheme.isValid(number));
     Assert.assertEquals(99, number.getCountryCode());
     Assert.assertEquals(22, number.getNationalDialingCode());
     Assert.assertEquals(111111, number.getSubscriberNumber());
@@ -30,7 +36,11 @@ public class TestBuilder {
 
   @Test(expected = IllegalArgumentException.class)
   public void failsWithBadRange() {
-    NumberScheme.create("2,2,6;CC=99;NDC=19-11;SN=111111", "XX");
+    NumberScheme.SchemeBuilder()
+        .cc("2:99")
+        .ndc("2:19-11")
+        .sn("6:111111")
+        .label("XX").build();
   }
 
   @Test(expected = IllegalArgumentException.class)
