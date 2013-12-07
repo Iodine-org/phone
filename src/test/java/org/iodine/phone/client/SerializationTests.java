@@ -13,7 +13,7 @@ import java.io.ObjectOutputStream;
 
 public class SerializationTests {
 
-  private static final NumberScheme SCHEME = NumberScheme.create("CC=2:49;NDC=3:160,162,163,170-179;SN=10", "DE.tmob+vfone");
+  private static final NumberScheme SCHEME = NumberScheme.create("CC=2:49;NDC=3:160,162,163,170-179;SN=10");
 
   @Test
   public void recreatesSchemeTransient() throws Exception {

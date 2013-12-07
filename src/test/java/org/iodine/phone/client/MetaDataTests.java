@@ -1,5 +1,6 @@
 package org.iodine.phone.client;
 
+import org.iodine.phone.InitalizationTests;
 import org.iodine.phone.NumberFactory;
 import org.iodine.phone.NumberScheme;
 import org.iodine.phone.PatternRule;
@@ -7,6 +8,11 @@ import org.iodine.phone.SetRule;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import static java.util.Arrays.asList;
 
@@ -50,4 +56,23 @@ public class MetaDataTests {
     Assert.assertEquals(6, snRule.getLength());
     Assert.assertEquals("32[\\d][\\d][\\d][\\d]", snRule.getPattern());
   }
+
+  @Test
+  public void canListRegisteredCCandNDCs() throws IOException {
+    final Set<Integer> expectCCs
+        = new HashSet<>(Arrays.asList(new Integer[]{353, 44, 1}));
+    final Set<Integer> expectNDCs
+        = new HashSet<>(Arrays.asList(new Integer[]{83, 82, 85, 89, 87, 88, 86}));
+    try {
+      InitalizationTests.createTempSchemeFile (
+        InitalizationTests.SCHEME_SPEC, "out/test/iodine-phone/NumberScheme.properties");
+      NumberFactory.loadDefaultScheme();
+      Assert.assertEquals(expectCCs, NumberFactory.getCountryCodes());
+      Assert.assertEquals(expectNDCs, NumberFactory.getAreaCodes(353));
+    } finally {
+      NumberFactory.clearSchemes();
+    }
+  }
+  
+  
 }

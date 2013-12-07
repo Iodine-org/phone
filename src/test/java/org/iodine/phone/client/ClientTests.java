@@ -9,7 +9,7 @@ import org.junit.Test;
  *  to its companion class */
 public class ClientTests {
 
-  private static final NumberScheme SCHEME = NumberScheme.create("CC=2:49;NDC=3:160,162,163,170-179;SN=10", "DE.tmob+vfone");
+  private static final NumberScheme SCHEME = NumberScheme.create("CC=2:49;NDC=3:160,162,163,170-179;SN=10");
 
   @Test
   public void canCreateMsisdn() {

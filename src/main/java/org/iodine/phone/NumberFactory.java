@@ -3,10 +3,12 @@ package org.iodine.phone;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Set;
 
 import static org.iodine.phone.NumberScheme.PartCode;
 
@@ -38,7 +40,6 @@ public class NumberFactory {
   }
   /** exception message prefixes (public for testability) */
   public static final String UNRECOGNIZED_SCHEME = "PhoneNumber Unrecognized scheme";
-
 
   /**
    * PhoneNumber factory method to match the input string against the known
@@ -141,7 +142,8 @@ public class NumberFactory {
     assert schemes.size() > 0;
     Map<Integer, NumberScheme> result = new HashMap<>();
     for (Entry<Object, Object> entry : schemes.entrySet()) {
-      NumberScheme scheme = NumberScheme.create((String) entry.getValue(), (String) entry.getKey());
+      NumberScheme scheme = NumberScheme.create((String) entry.getValue());
+      scheme.setName((String) entry.getKey());
       SetRule ccRule = (SetRule) scheme.rules.get(PartCode.CC);
       Integer cc = (Integer) ccRule.values.toArray()[0];
       result.put(createKey(cc, scheme.length), scheme);
@@ -185,7 +187,7 @@ public class NumberFactory {
     try {
       loadScheme(schemeResource, schemes);
     } catch (IOException e) {
-      // scheme left empty, not necessarily an error
+      // scheme not present, not necessarily an error
     }
   }
 
@@ -218,5 +220,23 @@ public class NumberFactory {
       }
     }
     return null;
+  }
+
+  public static Set<Integer> getCountryCodes() {
+    Set<Integer> result = new HashSet<>(schemes.size());
+    for ( NumberScheme scheme : schemes.values()) {
+      result.addAll(scheme.getCCRule().values);
+    }
+    return result;
+  }
+
+  public static Set<Integer> getAreaCodes(int countryCode) {
+    Set<Integer> result = new HashSet<>(schemes.size());
+    for ( NumberScheme scheme : schemes.values()) {
+      if ( scheme.getCCRule().values.contains(countryCode)) {
+        result.addAll(scheme.getNDCRule().values);
+      }
+    }
+    return result;
   }
 }

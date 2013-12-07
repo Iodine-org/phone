@@ -26,7 +26,7 @@ public class NumberScheme {
   public static final String INVALID_SCHEMA_PART_LENGTH = "Invalid part length ( <= 0 ) at index ";
   /** per-scheme instance values */
   final Map<PartCode, PartRule> rules;
-  final String name;
+  String name;
   final int length;
   final long ccfactor; // factor to decode CC from a long value
   final long ndcfactor; // factor to decode NDC from a long value
@@ -36,18 +36,20 @@ public class NumberScheme {
    * Constructor called from the static scheme loader to instantiate a scheme
    * from the parsed specification, as represented by the parameters below
    *
-   * @param schemeName unique name of the scheme (key)
    * @param rules      set of rules defining the parts
    * @param length     total length of a number in this scheme
    */
-  private NumberScheme(String schemeName, Map<PartCode, PartRule> rules, int length) {
-    this.name = schemeName;
+  private NumberScheme(Map<PartCode, PartRule> rules, int length) {
     this.length = length;
     this.rules = rules;
     int snlength = rules.get(PartCode.SN).length;
     int ndcLength = rules.get(PartCode.NDC).length;
     this.ccfactor = (long) Math.pow(10, ndcLength + snlength);
     this.ndcfactor = (long) Math.pow(10, snlength);
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 
   /** @return a new PhoneNumber for the supplied number, in this scheme
@@ -99,7 +101,7 @@ public class NumberScheme {
    * @param schemeName    identifying the scheme
    * @return a new scheme initialized from the supplied specification
    */
-  public static NumberScheme create(final String specification, String schemeName) {
+  public static NumberScheme create(final String specification) {
     Map<String,String> specMap = getSpecMap(specification);
     assert specMap.size() > 0 : "At minimum, parts lengths must specified";
 
@@ -115,7 +117,7 @@ public class NumberScheme {
         rules.get(PartCode.CC).getLength() +
         rules.get(PartCode.NDC).getLength() +
         rules.get(PartCode.SN).getLength();
-    NumberScheme result = new NumberScheme(schemeName, rules, schemeLength);
+    NumberScheme result = new NumberScheme(rules, schemeLength);
     result.setType ( type);
     return result;
   }
@@ -252,7 +254,10 @@ public class NumberScheme {
 
     public NumberScheme build() {
       String spec = "CC=" + cc + ";NDC=" + ndc + ";SN=" + sn;
-      NumberScheme result = NumberScheme.create(spec, label);
+      NumberScheme result = NumberScheme.create(spec);
+      if ( label != null) {
+        result.setName(label);
+      }
       if ( type != null) {
         result.setType(type);
       }

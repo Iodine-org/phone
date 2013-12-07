@@ -3,6 +3,8 @@ package org.iodine.phone;
 import org.junit.Assert;
 import org.junit.Test;
 
+import static org.iodine.phone.NumberScheme.SchemeType;
+
 public class TestBuilder {
 
   @Test
@@ -12,7 +14,7 @@ public class TestBuilder {
         .ndc("2:82,83,85,86,87,88,89")
         .sn("7")
         .label("IE")
-        .type(NumberScheme.SchemeType.FIXED_LINE).build());
+        .type(SchemeType.FIXED_LINE).build());
 
     PhoneNumber number = PhoneNumber.Builder().cc(353).ndc(87).subscriber(3538080).build();
     Assert.assertEquals(353873538080L, number.longValue());
@@ -24,8 +26,8 @@ public class TestBuilder {
   @Test
   public void testSchemeBuilder() {
    // NumberScheme.clearSchemes();
-    NumberScheme newScheme = NumberScheme.create("CC=2:99;NDC=2:22;SN=6:111111;Type=Mobile", "XX");
-    Assert.assertEquals(NumberScheme.SchemeType.MOBILE, newScheme.getType());
+    NumberScheme newScheme = NumberScheme.create("CC=2:99;NDC=2:22;SN=6:111111;Type=Mobile");
+    Assert.assertEquals(SchemeType.MOBILE, newScheme.getType());
     NumberFactory.addScheme(newScheme);
     PhoneNumber number = PhoneNumber.valueOf(9922111111L);
     Assert.assertTrue(newScheme.isValid(number));
@@ -40,6 +42,7 @@ public class TestBuilder {
         .cc("2:99")
         .ndc("2:19-11")
         .sn("6:111111")
+        .type(SchemeType.VOIP)
         .label("XX").build();
   }
 

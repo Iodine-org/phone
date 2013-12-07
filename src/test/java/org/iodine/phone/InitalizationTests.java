@@ -12,7 +12,7 @@ import java.util.List;
 
 public class InitalizationTests {
 
-  private static final List<String[]> SCHEME_SPEC = new ArrayList<String[]>() {{
+  public static final List<String[]> SCHEME_SPEC = new ArrayList<String[]>() {{
     add(new String[] { "CC=3:353;NDC=2:82,83,85,86,87,88,89;SN=7", "IE"});
     add(new String[] { "CC=2:44;NDC=3;SN=6", "UK"});
     add(new String[] { "CC=1:1;NDC=3;SN=7", "US"});
@@ -20,7 +20,9 @@ public class InitalizationTests {
   private static final List<NumberScheme> SCHEMES = new ArrayList<>();
   static {
     for ( String[] item : SCHEME_SPEC)  {
-      SCHEMES.add(NumberScheme.create(item[0], item[1]));
+      NumberScheme scheme = NumberScheme.create(item[0]);
+      scheme.setName(item[1]);
+      SCHEMES.add(scheme);
     }
   }
 
@@ -60,22 +62,22 @@ public class InitalizationTests {
 
   @Test(expected = IllegalArgumentException.class)
   public void shouldFailWithNegativePartLength() {
-    NumberScheme.create("CC=1:1;NDC=-1;SN=1", "US");
+    NumberScheme.create("CC=1:1;NDC=-1;SN=1");
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void shouldFailWhenNDCValueDoesNotMatchlength() {
-    NumberScheme.create("CC=2:30;NDC=2:222;SN=6", "GR");
+    NumberScheme.create("CC=2:30;NDC=2:222;SN=6");
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void shouldFailWhenNDCRangeDoesNotMatchlength() {
-    NumberScheme.create("CC=2:22;NDC=2:300-400;SN=6", "GR");
+    NumberScheme.create("CC=2:22;NDC=2:300-400;SN=6");
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void shouldFailWhenSNPatternDoesNotMatchlength() {
-    NumberScheme.create("CC=2:30;NDC=2:22;SN=6:32***", "GR");
+    NumberScheme.create("CC=2:30;NDC=2:22;SN=6:32***");
   }
 
   @Test
@@ -97,7 +99,7 @@ public class InitalizationTests {
     }
   }
 
-  private void createTempSchemeFile(List<String[]> schemeSpec, String path) throws IOException {
+  public static void createTempSchemeFile(List<String[]> schemeSpec, String path) throws IOException {
     File propFile = new File(path);
     propFile.deleteOnExit();
     PrintWriter printer = new PrintWriter(new FileOutputStream(propFile),true);
