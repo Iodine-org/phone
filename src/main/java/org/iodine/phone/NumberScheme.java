@@ -27,6 +27,7 @@ public class NumberScheme {
   /** per-scheme instance values */
   final Map<PartCode, PartRule> rules;
   String name;
+  String iso3166;
   final int length;
   final long ccfactor; // factor to decode CC from a long value
   final long ndcfactor; // factor to decode NDC from a long value
@@ -98,17 +99,12 @@ public class NumberScheme {
    * is seven digits long, and the complete number is eleven digits long
    *
    * @param specification string describing the scheme
-   * @param schemeName    identifying the scheme
    * @return a new scheme initialized from the supplied specification
    */
   public static NumberScheme create(final String specification) {
     Map<String,String> specMap = getSpecMap(specification);
     assert specMap.size() > 0 : "At minimum, parts lengths must specified";
 
-    SchemeType type = SchemeType.UNDEFINED;
-    if ( specMap.containsKey("TYPE")) {
-      type = SchemeType.valueOf(specMap.get("TYPE"));
-    }
     Map<PartCode, PartRule> rules = getPartRules(specMap);
     if ( rules.size() != 3) {
       throw new IllegalArgumentException("Expected rules for CC, NDC and SN, got[" + specification + "]");
@@ -118,7 +114,14 @@ public class NumberScheme {
         rules.get(PartCode.NDC).getLength() +
         rules.get(PartCode.SN).getLength();
     NumberScheme result = new NumberScheme(rules, schemeLength);
+    SchemeType type = SchemeType.UNDEFINED;
+    if ( specMap.containsKey("TYPE")) {
+      type = SchemeType.valueOf(specMap.get("TYPE"));
+    }
     result.setType ( type);
+    if ( specMap.containsKey("ISO3166")) {
+      result.iso3166 = specMap.get("ISO3166");
+    }
     return result;
   }
 
@@ -196,8 +199,13 @@ public class NumberScheme {
     this.type = type;
   }
 
+  /** @return type (category) of the numbers represented by this scheme */
   public SchemeType getType() {
     return type;
+  }
+  /** @return the ISO 3166-1-alpha-2 country code, if set, else nill */
+  public String getIso3166() {
+    return iso3166;
   }
 
   public String getName() {
@@ -226,6 +234,7 @@ public class NumberScheme {
     private String ndc;
     private String sn;
     private SchemeType type;
+    private String iso3166;
 
     public SchemeBuilder label(String label) {
       this.label = label;
@@ -252,6 +261,11 @@ public class NumberScheme {
       return this;
     }
 
+    public SchemeBuilder iso3166(String iso3166) {
+      this.iso3166 = iso3166;
+      return this;
+    }
+
     public NumberScheme build() {
       String spec = "CC=" + cc + ";NDC=" + ndc + ";SN=" + sn;
       NumberScheme result = NumberScheme.create(spec);
@@ -260,6 +274,9 @@ public class NumberScheme {
       }
       if ( type != null) {
         result.setType(type);
+      }
+      if ( iso3166 != null) {
+        result.iso3166 = iso3166;
       }
       return result;
     }

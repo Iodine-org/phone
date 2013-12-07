@@ -13,9 +13,9 @@ import java.util.List;
 public class InitalizationTests {
 
   public static final List<String[]> SCHEME_SPEC = new ArrayList<String[]>() {{
-    add(new String[] { "CC=3:353;NDC=2:82,83,85,86,87,88,89;SN=7", "IE"});
-    add(new String[] { "CC=2:44;NDC=3;SN=6", "UK"});
-    add(new String[] { "CC=1:1;NDC=3;SN=7", "US"});
+    add(new String[] { "CC=3:353;NDC=2:82,83,85,86,87,88,89;SN=7;ISO3166=IE", "IE"});
+    add(new String[] { "CC=2:44;NDC=3;SN=6;ISO3166=GB", "UK"});
+    add(new String[] { "CC=1:1;NDC=3;SN=7;ISO3166=US", "US"});
   }};
   private static final List<NumberScheme> SCHEMES = new ArrayList<>();
   static {

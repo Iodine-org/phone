@@ -10,14 +10,18 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 import static java.util.Arrays.asList;
+import static org.iodine.phone.InitalizationTests.createTempSchemeFile;
 
 /** Test availability of Scheme metadata: useful for creating and validating UI inputs */
 public class MetaDataTests {
+
+  public static final String CLASSPATH_PROPERTY_FILE
+      = "out/test/iodine-phone/NumberScheme.properties";
 
   @Before
   public void loadTestSchemas() {
@@ -60,15 +64,16 @@ public class MetaDataTests {
   @Test
   public void canListRegisteredCCandNDCs() throws IOException {
     final Set<Integer> expectCCs
-        = new HashSet<>(Arrays.asList(new Integer[]{353, 44, 1}));
+        = new HashSet<>(asList(new Integer[]{353, 44, 1}));
     final Set<Integer> expectNDCs
-        = new HashSet<>(Arrays.asList(new Integer[]{83, 82, 85, 89, 87, 88, 86}));
+        = new HashSet<>(asList(new Integer[]{83, 82, 85, 89, 87, 88, 86}));
     try {
-      InitalizationTests.createTempSchemeFile (
-        InitalizationTests.SCHEME_SPEC, "out/test/iodine-phone/NumberScheme.properties");
+      createTempSchemeFile ( InitalizationTests.SCHEME_SPEC, CLASSPATH_PROPERTY_FILE);
       NumberFactory.loadDefaultScheme();
+
       Assert.assertEquals(expectCCs, NumberFactory.getCountryCodes());
       Assert.assertEquals(expectNDCs, NumberFactory.getAreaCodes(353));
+      Assert.assertEquals ( 1, NumberFactory.getSchemesForLocale(Locale.US).size());
     } finally {
       NumberFactory.clearSchemes();
     }

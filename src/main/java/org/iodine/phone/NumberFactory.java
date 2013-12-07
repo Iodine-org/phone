@@ -2,9 +2,11 @@ package org.iodine.phone;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -40,6 +42,7 @@ public class NumberFactory {
   }
   /** exception message prefixes (public for testability) */
   public static final String UNRECOGNIZED_SCHEME = "PhoneNumber Unrecognized scheme";
+  public static final int MAX_CC_SIZE = 4;
 
   /**
    * PhoneNumber factory method to match the input string against the known
@@ -59,7 +62,7 @@ public class NumberFactory {
     }
     String candidate = normalize(msisdnString);
     PhoneNumber result = null;
-    for (int ccSize = 3; ccSize > 0 && result == null; ccSize--) {
+    for (int ccSize = MAX_CC_SIZE; ccSize > 0 && result == null; ccSize--) {
       result = lookupByCC(ccSize, candidate);
     }
     if (result == null) {
@@ -238,5 +241,19 @@ public class NumberFactory {
       }
     }
     return result;
+  }
+
+  public static List<NumberScheme> getSchemesForISO3166(String iso3166) {
+    List<NumberScheme> result = new ArrayList<>(schemes.size());
+    for ( NumberScheme scheme : schemes.values()) {
+      if ( iso3166.equals(scheme.getIso3166())) {
+        result.add(scheme);
+      }
+    }
+    return result;
+  }
+
+  public static List<NumberScheme> getSchemesForLocale(Locale locale) {
+    return getSchemesForISO3166(locale.getCountry());
   }
 }

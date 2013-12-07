@@ -13,7 +13,8 @@ public class TestBuilder {
         .cc("3:353")
         .ndc("2:82,83,85,86,87,88,89")
         .sn("7")
-        .label("IE")
+        .label("IE.Mobile")
+        .iso3166("IE")
         .type(SchemeType.FIXED_LINE).build());
 
     PhoneNumber number = PhoneNumber.Builder().cc(353).ndc(87).subscriber(3538080).build();
