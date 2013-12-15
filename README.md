@@ -24,7 +24,7 @@ Defines a 15-digit phone number, country dialing code +49, with a restricted set
 ## Usage
 JavaDoc: https://github.com/Iodine-org/phone/blob/master/apidocs/index.html
 ```java
-PhoneNumber number1 = PhoneNumber.parse("+353-86-3578380");
+PhoneNumber number1 = PhoneNumber.parse("+353-86-3578080");
 PhoneNumber number2 = PhoneNumber.parse("+44.865.249.864")
 PhoneNumber number3 = PhoneNumber.valueOf(491711234567890L);
 PhoneNumber number4 = PhoneNumber.Builder().cc(353).ndc(87).subscriber(3538080).build();
