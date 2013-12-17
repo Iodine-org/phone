@@ -87,8 +87,7 @@ public class NumberScheme {
   }
 
   /**
-   * Create a NumberScheme object representing the scheme specification
-   * passed in string form
+   * @return a new scheme initialized from the supplied specification
    * <p/>
    * Example specification:
    * <pre>
@@ -99,7 +98,6 @@ public class NumberScheme {
    * is seven digits long, and the complete number is eleven digits long
    *
    * @param specification string describing the scheme
-   * @return a new scheme initialized from the supplied specification
    */
   public static NumberScheme create(final String specification) {
     Map<String,String> specMap = getSpecMap(specification);
@@ -125,6 +123,7 @@ public class NumberScheme {
     return result;
   }
 
+  /** @return a mapping of the specification as key/value pairs */
   private static Map<String,String> getSpecMap(String specification) {
     String[] parts = specification.replaceAll(" ", "").toUpperCase().split(";");
     Map<String,String> result = new HashMap<>(parts.length);
@@ -138,8 +137,8 @@ public class NumberScheme {
     return result;
   }
 
-  /**
-   * For each part, assign the rule from the specification array supplied
+  /** @return a mapping of the scheme part codes to the part rules defined
+   *  For each part, assign the rule from the specification array supplied
    * (this is the set of allowed values for that part)
    *
    * @param valueSet array of allowed values
@@ -169,12 +168,11 @@ public class NumberScheme {
     return result;
   }
 
-  /**
+  /** @return a PhoneNumber number belonging to this scheme constructed from
+   *            the parameters supplied
    * @param cc  country code
    * @param ndc national dialing code
    * @param sn  subscriber number
-   * @return a PhoneNumber number belonging to this scheme constructed from
-   *         the parameters supplied
    */
   long longValue(int cc, int ndc, int sn) {
     return (cc * ccfactor) + (ndc * ndcfactor) + sn;
@@ -184,7 +182,7 @@ public class NumberScheme {
    * Key to the scheme map is CC left-shifted by four bits plus the PhoneNumber length-1, this
    * allows up to 15 digits lengths to be specified with an arbitrarily long country code
    * E.g., 353 + 11 => 0x161b, or 1 + 14 (max US number):  0x001e */
-  private static Integer createKey(int countryCode, int length) {
+  static Integer createKey(int countryCode, int length) {
     return (countryCode << 4) + Math.abs(length - 1);
   }
 
@@ -195,6 +193,7 @@ public class NumberScheme {
     return createKey(values.iterator().next(), this.length);
   }
 
+  /** set the type of this number scheme to <code>type</code> */
   public void setType ( SchemeType type) {
     this.type = type;
   }
@@ -203,31 +202,36 @@ public class NumberScheme {
   public SchemeType getType() {
     return type;
   }
-  /** @return the ISO 3166-1-alpha-2 country code, if set, else nill */
+  /** @return the ISO 3166-1-alpha-2 country code, if set, else null */
   public String getIso3166() {
     return iso3166;
   }
-
+  /** @return the name this scheme has been tagged with, else null */
   public String getName() {
     return name;
   }
 
+  /** @return the rule describing the country dialing code part */
   public SetRule getCCRule() {
     return (SetRule)rules.get(PartCode.CC);
   }
 
+  /** @return the rule describing the national dialing code part */
   public SetRule getNDCRule() {
     return (SetRule)rules.get(PartCode.NDC);
   }
 
+  /** @return the rule describing the subscriber number part */
   public PatternRule getSNRule() {
     return (PatternRule)rules.get(PartCode.SN);
   }
 
-  public static SchemeBuilder SchemeBuilder() {
+  /** @return a new builder that can be used to construct a NumberScheme */
+  public static SchemeBuilder Builder() {
     return new SchemeBuilder();
   }
 
+  /** Builder for constructing NumberScheme objects */
   public static class SchemeBuilder {
     private String label;
     private String cc;

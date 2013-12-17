@@ -9,7 +9,7 @@ public class TestBuilder {
 
   @Test
   public void testBuild() {
-    NumberFactory.addScheme(NumberScheme.SchemeBuilder()
+    NumberFactory.addScheme(NumberScheme.Builder()
         .cc("3:353")
         .ndc("2:82,83,85,86,87,88,89")
         .sn("7")
@@ -39,7 +39,7 @@ public class TestBuilder {
 
   @Test(expected = IllegalArgumentException.class)
   public void failsWithBadRange() {
-    NumberScheme.SchemeBuilder()
+    NumberScheme.Builder()
         .cc("2:99")
         .ndc("2:19-11")
         .sn("6:111111")

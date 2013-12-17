@@ -13,6 +13,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import static org.iodine.phone.NumberScheme.PartCode;
+import static org.iodine.phone.NumberScheme.createKey;
 
 /**
  * Creates PhoneNumber numbers based on registered schemes, loaded from a resource named
@@ -153,13 +154,6 @@ public class NumberFactory {
     }
     assert result.size() == schemes.size();
     return result;
-  }
-
-  /** @return key to the scheme map is CC left-shifted by four bits plus the PhoneNumber length-1, this
-   *    allows up to 15 digits lengths to be specified with an arbitrarily long country code
-   *    E.g., 353 + 11 => 0x161b, or 1 + 14 (max US number):  0x001e */
-  private static Integer createKey(int countryCode, int length) {
-    return (countryCode << 4) + Math.abs(length - 1);
   }
 
   /** Clear the currently registered PhoneNumber schemes in this singleton,
