@@ -1,4 +1,4 @@
-package org.iodine.phone;
+package org.macgyver.phone;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,8 +12,8 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 
-import static org.iodine.phone.NumberScheme.PartCode;
-import static org.iodine.phone.NumberScheme.createKey;
+import static org.macgyver.phone.NumberScheme.PartCode;
+import static org.macgyver.phone.NumberScheme.createKey;
 
 /**
  * Creates PhoneNumber numbers based on registered schemes, loaded from a resource named
@@ -34,7 +34,7 @@ import static org.iodine.phone.NumberScheme.createKey;
  */
 public class NumberFactory {
 
-  /** loads PhoneNumber specifications from file named by this property */
+  /** by default, load PhoneNumber specifications from file named by this property */
   public static final String MSISDN_PROPERTIES_DEFAULT = "/NumberScheme.properties";
   /** known PhoneNumber schemes from property file */
   private static final Map<Integer, NumberScheme> schemes = new HashMap<>();
@@ -74,8 +74,7 @@ public class NumberFactory {
     return result;
   }
 
-  /**
-   * @return a registered scheme that matches the supplied values
+  /** @return a registered scheme that matches the supplied values
    * @param cc country code of the returned scheme
    * @param length of the number
    */
@@ -83,14 +82,13 @@ public class NumberFactory {
     return schemes.get(createKey(cc, length));
   }
 
-  /**
-   * Look-up the scheme for the country code represented by the first <code>ccSize</code>
-   * digits of the supplied string, continuing to match the NDC and SN if found, and
-   * creating the appropriate PhoneNumber
+  /** @return a PhoneNumber version of the candidate string, if valid, else null<p/>
+   *  Look-up the scheme for the country code represented by the first <code>ccSize</code>
+   *  digits of the supplied string, continuing to match the NDC and SN if found, and
+   *  creating the appropriate PhoneNumber
    *
    * @param ccSize    assumed size of country code prefix
    * @param candidate the normalized PhoneNumber string
-   * @return a PhoneNumber version of the candidate string, if valid, else null
    */
   private static PhoneNumber lookupByCC(int ccSize, String candidate) {
     if (candidate.length() < ccSize) {
@@ -115,12 +113,11 @@ public class NumberFactory {
     return PhoneNumber.create(tryCC, tryNDC, sn, scheme);
   }
 
-  /**
-   * process a external PhoneNumber string into a normalized string, removing
-   * non-digits, and country code indicators ('+', '00') if present
+  /** @return normalized copy of the input string
+   *  process a external PhoneNumber string into a normalized string, removing
+   *  non-digits, and country code indicators ('+', '00') if present
    *
    * @param msisdnString possibly non-normalized
-   * @return normalized copy of the input string
    */
   private static String normalize(String msisdnString) {
     return msisdnString
@@ -247,6 +244,7 @@ public class NumberFactory {
     return result;
   }
 
+  /** @return all registered number schemes applicable to <code>locale</code> */
   public static List<NumberScheme> getSchemesForLocale(Locale locale) {
     return getSchemesForISO3166(locale.getCountry());
   }

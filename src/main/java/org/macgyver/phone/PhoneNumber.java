@@ -1,4 +1,4 @@
-package org.iodine.phone;
+package org.macgyver.phone;
 
 import java.io.Serializable;
 

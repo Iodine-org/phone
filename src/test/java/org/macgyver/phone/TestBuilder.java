@@ -1,9 +1,9 @@
-package org.iodine.phone;
+package org.macgyver.phone;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import static org.iodine.phone.NumberScheme.SchemeType;
+import static org.macgyver.phone.NumberScheme.SchemeType;
 
 public class TestBuilder {
 

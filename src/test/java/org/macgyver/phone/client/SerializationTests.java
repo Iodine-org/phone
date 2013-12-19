@@ -1,8 +1,8 @@
-package org.iodine.phone.client;
+package org.macgyver.phone.client;
 
-import org.iodine.phone.NumberFactory;
-import org.iodine.phone.NumberScheme;
-import org.iodine.phone.PhoneNumber;
+import org.macgyver.phone.NumberFactory;
+import org.macgyver.phone.NumberScheme;
+import org.macgyver.phone.PhoneNumber;
 import org.junit.Assert;
 import org.junit.Test;
 
