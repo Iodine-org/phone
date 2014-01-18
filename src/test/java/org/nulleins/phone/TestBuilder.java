@@ -1,9 +1,9 @@
-package org.macgyver.phone;
+package org.nulleins.phone;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import static org.macgyver.phone.NumberScheme.SchemeType;
+import static org.nulleins.phone.NumberScheme.SchemeType;
 
 public class TestBuilder {
 

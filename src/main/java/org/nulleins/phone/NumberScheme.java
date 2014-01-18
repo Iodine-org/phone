@@ -1,4 +1,4 @@
-package org.macgyver.phone;
+package org.nulleins.phone;
 
 import java.util.HashMap;
 import java.util.Map;

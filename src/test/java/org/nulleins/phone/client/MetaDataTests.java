@@ -1,10 +1,10 @@
-package org.macgyver.phone.client;
+package org.nulleins.phone.client;
 
-import org.macgyver.phone.InitalizationTests;
-import org.macgyver.phone.NumberFactory;
-import org.macgyver.phone.NumberScheme;
-import org.macgyver.phone.PatternRule;
-import org.macgyver.phone.SetRule;
+import org.nulleins.phone.InitalizationTests;
+import org.nulleins.phone.NumberFactory;
+import org.nulleins.phone.NumberScheme;
+import org.nulleins.phone.PatternRule;
+import org.nulleins.phone.SetRule;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,13 +15,13 @@ import java.util.Locale;
 import java.util.Set;
 
 import static java.util.Arrays.asList;
-import static org.macgyver.phone.InitalizationTests.createTempSchemeFile;
+import static org.nulleins.phone.InitalizationTests.createTempSchemeFile;
 
 /** Test availability of Scheme metadata: useful for creating and validating UI inputs */
 public class MetaDataTests {
 
   public static final String CLASSPATH_PROPERTY_FILE
-      = "out/test/macgyver-phone/NumberScheme.properties";
+      = "out/test/phone/NumberScheme.properties";
 
   @Before
   public void loadTestSchemas() {

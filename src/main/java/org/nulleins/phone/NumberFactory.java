@@ -1,4 +1,4 @@
-package org.macgyver.phone;
+package org.nulleins.phone;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,9 +11,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
-
-import static org.macgyver.phone.NumberScheme.PartCode;
-import static org.macgyver.phone.NumberScheme.createKey;
 
 /**
  * Creates PhoneNumber numbers based on registered schemes, loaded from a resource named
@@ -79,7 +76,7 @@ public class NumberFactory {
    * @param length of the number
    */
   public static NumberScheme getSchemeForCC(int cc, int length) {
-    return schemes.get(createKey(cc, length));
+    return schemes.get(NumberScheme.createKey(cc, length));
   }
 
   /** @return a PhoneNumber version of the candidate string, if valid, else null<p/>
@@ -95,16 +92,16 @@ public class NumberFactory {
       return null;
     }
     int tryCC = Integer.valueOf(candidate.substring(0, ccSize));
-    NumberScheme scheme = schemes.get(createKey(tryCC, candidate.length()));
+    NumberScheme scheme = schemes.get(NumberScheme.createKey(tryCC, candidate.length()));
     if (scheme == null) {
       return null;
     }
-    PartRule ndcRule = scheme.rules.get(PartCode.NDC);
+    PartRule ndcRule = scheme.rules.get(NumberScheme.PartCode.NDC);
     int tryNDC = Integer.valueOf(candidate.substring(ccSize, ccSize + ndcRule.length));
     if (ndcRule.isValid(tryNDC) == false) {
       return null;
     }
-    PartRule snRule = scheme.rules.get(PartCode.SN);
+    PartRule snRule = scheme.rules.get(NumberScheme.PartCode.SN);
     String snString = candidate.substring(ccSize + ndcRule.length);
     int sn = Integer.valueOf(snString);
     if (snRule.isValid(sn) == false) {
@@ -145,9 +142,9 @@ public class NumberFactory {
     for (Entry<Object, Object> entry : schemes.entrySet()) {
       NumberScheme scheme = NumberScheme.create((String) entry.getValue());
       scheme.setName((String) entry.getKey());
-      SetRule ccRule = (SetRule) scheme.rules.get(PartCode.CC);
+      SetRule ccRule = (SetRule) scheme.rules.get(NumberScheme.PartCode.CC);
       Integer cc = (Integer) ccRule.values.toArray()[0];
-      result.put(createKey(cc, scheme.length), scheme);
+      result.put(NumberScheme.createKey(cc, scheme.length), scheme);
     }
     assert result.size() == schemes.size();
     return result;

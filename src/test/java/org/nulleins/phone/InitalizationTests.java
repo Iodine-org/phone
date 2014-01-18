@@ -1,4 +1,4 @@
-package org.macgyver.phone;
+package org.nulleins.phone;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -90,7 +90,7 @@ public class InitalizationTests {
     NumberFactory.clearSchemes();
 
     try {
-      createTempSchemeFile(SCHEME_SPEC,"out/test/macgyver-phone/NumberScheme.properties");
+      createTempSchemeFile(SCHEME_SPEC,"out/test/phone/NumberScheme.properties");
 
       NumberFactory.loadDefaultScheme();
       Assert.assertNotNull(NumberFactory.getScheme("IE"));

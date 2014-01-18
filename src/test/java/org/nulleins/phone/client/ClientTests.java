@@ -1,7 +1,7 @@
-package org.macgyver.phone.client;
+package org.nulleins.phone.client;
 
-import org.macgyver.phone.PhoneNumber;
-import org.macgyver.phone.NumberScheme;
+import org.nulleins.phone.PhoneNumber;
+import org.nulleins.phone.NumberScheme;
 import org.junit.Assert;
 import org.junit.Test;
 
